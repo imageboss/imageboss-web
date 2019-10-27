@@ -1,4 +1,11 @@
-(function (localOptions){
+(function (){
+    const localOptions = {
+        propKey: 'data-imageboss',
+        imgPropKey: 'data-imageboss-src',
+        bgPropKey: 'data-imageboss-bg-src',
+        dprSupport: window.devicePixelRatio,
+    };
+
     function getUrl(src, { operation, coverMode, width, height, options }) {
         const serviceUrl = 'https://img.imageboss.me';
         let template = '/:operation/:options/';
@@ -78,24 +85,25 @@
             });
     };
 
-    imageLookup(document.querySelectorAll(`[${localOptions.imgPropKey}],[${localOptions.bgPropKey}]`));
+    (function webpDetection(callback) {
+        var img = new Image();
+        img.src = 'data:image/webp;base64,UklGRh4AAABXRUJQVlA4TBEAAAAvAAAAAAfQ//73v/+BiOh/AAA=';
+        img.onload = callback.bind(this, true);
+        img.onerror = callback.bind(this, false);
+    })(function(webSupport) {
+        localOptions.webpSupport = webSupport;
 
-    new MutationObserver(function(mutationsList) {
-        for (let mutation of mutationsList) {
-            if (mutation.type === 'childList') {
-                imageLookup(mutation.addedNodes);
+        imageLookup(document.querySelectorAll(`[${localOptions.imgPropKey}],[${localOptions.bgPropKey}]`));
+
+        new MutationObserver(function(mutationsList) {
+            for (let mutation of mutationsList) {
+                if (mutation.type === 'childList') {
+                    imageLookup(mutation.addedNodes);
+                }
             }
-        }
-    }).observe(document.querySelector('body'), { attributes: true, childList: true, subtree: true });
-})({
-    propKey: 'data-imageboss',
-    webpSupport: async function supportsWebp() {
-        if (!self.createImageBitmap) return false;
-        const webpData = 'data:image/webp;base64,UklGRh4AAABXRUJQVlA4TBEAAAAvAAAAAAfQ//73v/+BiOh/AAA=';
-        const blob = await fetch(webpData).then(r => r.blob());
-        return createImageBitmap(blob).then(() => true, () => false);
-    }(),
-    dprSupport: window.devicePixelRatio,
-    imgPropKey: 'data-imageboss-src',
-    bgPropKey: 'data-imageboss-bg-src',
-});
+        }).observe(
+            document.querySelector('body'),
+            { attributes: true, childList: true, subtree: true }
+        );
+    });
+})();
