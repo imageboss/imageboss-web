@@ -77,8 +77,13 @@
                     return false;
                 }
 
-                const src = img.getAttribute(localOptions.imgPropKey) || img.getAttribute(localOptions.bgPropKey);
+                let src = img.getAttribute(localOptions.imgPropKey) || img.getAttribute(localOptions.bgPropKey);
                 const matchPattern = RegExp(ImageBoss.authorisedHosts.join('|'));
+
+                if (src && !src.match(/^https?:\/\//)) {
+                    src = `${window.location.origin}/${src}`
+                }
+
                 return src && src.match(matchPattern) && !src.match(serviceHost);
             })
             .forEach(img => {
