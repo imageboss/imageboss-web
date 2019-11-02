@@ -89,7 +89,7 @@
                 return src && src.match(matchPattern) && !src.match(serviceHost);
             })
             .forEach(img => {
-                const url       = img.getAttribute(localOptions.imgPropKey) || img.getAttribute(localOptions.bgPropKey);
+                const src       = buildSrc(img.getAttribute(localOptions.imgPropKey) || img.getAttribute(localOptions.bgPropKey));
                 const operation = img.getAttribute(`${localOptions.propKey}-operation`) || 'width';
                 const coverMode = img.getAttribute(`${localOptions.propKey}-cover-mode`);
                 const width     = img.getAttribute('width') || img.clientWidth;
@@ -97,7 +97,7 @@
                 const options   = (img.getAttribute(`${localOptions.propKey}-options`) || '').split(',');
 
                 if (localOptions.devMode) {
-                    return setImage(img, url);
+                    return setImage(img, src);
                 }
 
                 if (localOptions.webpEnabled && localOptions.webpSupport) {
@@ -108,7 +108,7 @@
                     options.push('dpr:2');
                 }
 
-                const newUrl = getUrl(url, {
+                const newUrl = getUrl(src, {
                     operation,
                     coverMode,
                     width,
@@ -122,7 +122,7 @@
                     options.push('quality:50');
                     options.push('blur:20');
 
-                    const lowResUrl = getUrl(url, {
+                    const lowResUrl = getUrl(src, {
                         operation,
                         coverMode: coverMode,
                         width: Math.round(width * 0.4),

@@ -87,7 +87,7 @@
       var matchPattern = RegExp(ImageBoss.authorisedHosts.join('|'));
       return src && src.match(matchPattern) && !src.match(serviceHost);
     }).forEach(img => {
-      var url = img.getAttribute(localOptions.imgPropKey) || img.getAttribute(localOptions.bgPropKey);
+      var src = buildSrc(img.getAttribute(localOptions.imgPropKey) || img.getAttribute(localOptions.bgPropKey));
       var operation = img.getAttribute("".concat(localOptions.propKey, "-operation")) || 'width';
       var coverMode = img.getAttribute("".concat(localOptions.propKey, "-cover-mode"));
       var width = img.getAttribute('width') || img.clientWidth;
@@ -95,7 +95,7 @@
       var options = (img.getAttribute("".concat(localOptions.propKey, "-options")) || '').split(',');
 
       if (localOptions.devMode) {
-        return setImage(img, url);
+        return setImage(img, src);
       }
 
       if (localOptions.webpEnabled && localOptions.webpSupport) {
@@ -106,7 +106,7 @@
         options.push('dpr:2');
       }
 
-      var newUrl = getUrl(url, {
+      var newUrl = getUrl(src, {
         operation,
         coverMode,
         width,
@@ -117,7 +117,7 @@
       if (localOptions.lowResolutionFirstEnabled) {
         options.push('quality:50');
         options.push('blur:20');
-        var lowResUrl = getUrl(url, {
+        var lowResUrl = getUrl(src, {
           operation,
           coverMode: coverMode,
           width: Math.round(width * 0.4),
