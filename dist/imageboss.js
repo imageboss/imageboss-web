@@ -65,7 +65,7 @@
     if (isImg(element)) {
       element.setAttribute('src', url);
     } else if (isBg(element)) {
-      element.style.background = "url('".concat(url, "')");
+      element.style.backgroundImage = "url('".concat(url, "')");
     }
   }
 
