@@ -1,1 +1,165 @@
-"use strict";/* Copyright © 2019 ImageBoss. All rights reserved. */(function(){function a(a,b){return h[a]===void 0?b:h[a]}function b(a,b){var{operation:c,coverMode:d,width:e,height:f,options:g}=b,h="/:operation/:options/";"cover"===c?h="/:operation::cover_mode/:widthx:height/:options/":"width"===c?h="/:operation/:width/:options/":"height"===c&&(h="/:operation/:height/:options/");var i=h.replace(":operation",c||"").replace(":cover_mode",d||"").replace(":width",e||"").replace(":height",f||"").replace(":options",g||"").replace(/\/\//g,"/").replace(/:\//g,"/");return"https://img.imageboss.me"+i+a}function c(a){return!!a.getAttribute("".concat(i.propKey,"-src"))}function d(a){return!!a.getAttribute("".concat(i.propKey,"-bg-src"))}function e(a,b){i.blurEnabled&&(a.style["-webkit-filter"]="blur(".concat(b,"px)"),a.style["-moz-filter"]="blur(".concat(b,"px)"),a.style["-o-filter"]="blur(".concat(b,"px)"),a.style["-ms-filter"]="blur(".concat(b,"px)"),a.style.filter="blur(".concat(b,"px)"))}function f(a,b){c(a)?a.setAttribute("src",b):d(a)&&(a.style.background="url('".concat(b,"')"))}function g(a){Array.from(a).filter(a=>{if(!a.getAttribute)return!1;var b=a.getAttribute(i.imgPropKey)||a.getAttribute(i.bgPropKey),c=RegExp(h.authorisedHosts.join("|"));return b.match(c)}).forEach(a=>{var c=Math.round,g=a.getAttribute(i.imgPropKey)||a.getAttribute(i.bgPropKey),h=a.getAttribute("".concat(i.propKey,"-operation"))||"width",j=a.getAttribute("".concat(i.propKey,"-cover-mode")),k=a.getAttribute("width")||a.clientWidth,l=a.getAttribute("height")||a.clientHeight,m=(a.getAttribute("".concat(i.propKey,"-options"))||"").split(",");if(i.devMode)return f(a,g);i.webpEnabled&&i.webpSupport&&m.push("format:webp"),i.dprEnabled&&1<i.dprSupport&&m.push("dpr:2");var n=b(g,{operation:h,coverMode:j,width:k,height:l,options:m.filter(b=>!d(a)&&!b.match(/dpr/)||b).filter(a=>a).join(",")});if(i.lowResolutionFirstEnabled){m.push("quality:50"),m.push("blur:20");var o=b(g,{operation:h,coverMode:j,width:c(.4*k),height:c(.4*l),options:m.filter(a=>!a.match(/dpr/)).filter(a=>a).join(",")});f(a,o),d(a)&&(a.style.backgroundSize="".concat(k,"px")),a.style.transition="filter 1s",e(a,10);var p=new Image;p.src=n,p.onload=function(){e(a,0),f(a,n)}}else f(a,n)})}var h=window.ImageBoss,i={propKey:"data-imageboss",imgPropKey:"data-imageboss-src",bgPropKey:"data-imageboss-bg-src",dprSupport:window.devicePixelRatio,devMode:a("devMode",!1),dprEnabled:a("dprEnabled",!0),webpEnabled:a("webpEnabled",!0),blurEnabled:a("blurEnabled",!0),lowResolutionFirstEnabled:a("lowResolutionFirstEnabled",!0)};(function(a,b){if(!b)return a(!1);var c=new Image;c.src="data:image/webp;base64,UklGRh4AAABXRUJQVlA4TBEAAAAvAAAAAAfQ//73v/+BiOh/AAA=",c.onload=a.bind(this,!0),c.onerror=a.bind(this,!1)})(function(a){i.webpSupport=a,g(document.querySelectorAll("[".concat(i.imgPropKey,"],[").concat(i.bgPropKey,"]"))),new MutationObserver(function(a){for(var b of a)"childList"===b.type&&g(b.addedNodes)}).observe(document.querySelector("body"),{attributes:!0,childList:!0,subtree:!0})},i.webpEnabled)})();
+"use strict";
+
+/* Copyright © 2019 ImageBoss. All rights reserved. */
+(function () {
+  var ImageBoss = window.ImageBoss;
+  var localOptions = {
+    propKey: 'data-imageboss',
+    imgPropKey: 'data-imageboss-src',
+    bgPropKey: 'data-imageboss-bg-src',
+    dprSupport: window.devicePixelRatio,
+    devMode: isEnabled('devMode', false),
+    dprEnabled: isEnabled('dprEnabled', true),
+    webpEnabled: isEnabled('webpEnabled', true),
+    blurEnabled: isEnabled('blurEnabled', true),
+    lowResolutionFirstEnabled: isEnabled('lowResolutionFirstEnabled', true)
+  };
+
+  function isEnabled(prop, fallback) {
+    return ImageBoss[prop] !== undefined ? ImageBoss[prop] : fallback;
+  }
+
+  function getUrl(src, _ref) {
+    var {
+      operation,
+      coverMode,
+      width,
+      height,
+      options
+    } = _ref;
+    var serviceUrl = 'https://img.imageboss.me';
+    var template = '/:operation/:options/';
+
+    if (operation === 'cover') {
+      template = '/:operation::cover_mode/:widthx:height/:options/';
+    } else if (operation === 'width') {
+      template = '/:operation/:width/:options/';
+    } else if (operation === 'height') {
+      template = '/:operation/:height/:options/';
+    }
+
+    var finalUrl = template.replace(':operation', operation || '').replace(':cover_mode', coverMode || '').replace(':width', width || '').replace(':height', height || '').replace(':options', options || '').replace(/\/\//g, '/').replace(/:\//g, '/');
+    return serviceUrl + finalUrl + src;
+  }
+
+  function isImg(element) {
+    return !!element.getAttribute("".concat(localOptions.propKey, "-src"));
+  }
+
+  function isBg(element) {
+    return !!element.getAttribute("".concat(localOptions.propKey, "-bg-src"));
+  }
+
+  function setBlur(element, blur) {
+    if (localOptions.blurEnabled) {
+      element.style['-webkit-filter'] = "blur(".concat(blur, "px)");
+      element.style['-moz-filter'] = "blur(".concat(blur, "px)");
+      element.style['-o-filter'] = "blur(".concat(blur, "px)");
+      element.style['-ms-filter'] = "blur(".concat(blur, "px)");
+      element.style['filter'] = "blur(".concat(blur, "px)");
+    }
+  }
+
+  function setImage(element, url) {
+    if (isImg(element)) {
+      element.setAttribute('src', url);
+    } else if (isBg(element)) {
+      element.style.background = "url('".concat(url, "')");
+    }
+  }
+
+  function lookup(nodeList) {
+    Array.from(nodeList).filter(img => {
+      if (!img.getAttribute) {
+        return false;
+      }
+
+      var src = img.getAttribute(localOptions.imgPropKey) || img.getAttribute(localOptions.bgPropKey);
+      var matchPattern = RegExp(ImageBoss.authorisedHosts.join('|'));
+      return src.match(matchPattern);
+    }).forEach(img => {
+      var url = img.getAttribute(localOptions.imgPropKey) || img.getAttribute(localOptions.bgPropKey);
+      var operation = img.getAttribute("".concat(localOptions.propKey, "-operation")) || 'width';
+      var coverMode = img.getAttribute("".concat(localOptions.propKey, "-cover-mode"));
+      var width = img.getAttribute('width') || img.clientWidth;
+      var height = img.getAttribute('height') || img.clientHeight;
+      var options = (img.getAttribute("".concat(localOptions.propKey, "-options")) || '').split(',');
+
+      if (localOptions.devMode) {
+        return setImage(img, url);
+      }
+
+      if (localOptions.webpEnabled && localOptions.webpSupport) {
+        options.push('format:webp');
+      }
+
+      if (localOptions.dprEnabled && localOptions.dprSupport > 1) {
+        options.push('dpr:2');
+      }
+
+      var newUrl = getUrl(url, {
+        operation,
+        coverMode,
+        width,
+        height,
+        options: options.filter(opts => !isBg(img) && !opts.match(/dpr/) || opts).filter(opts => opts).join(',')
+      });
+
+      if (localOptions.lowResolutionFirstEnabled) {
+        options.push('quality:50');
+        options.push('blur:20');
+        var lowResUrl = getUrl(url, {
+          operation,
+          coverMode: coverMode,
+          width: Math.round(width * 0.4),
+          height: Math.round(height * 0.4),
+          options: options.filter(opts => !opts.match(/dpr/)).filter(opts => opts).join(',')
+        });
+        setImage(img, lowResUrl);
+
+        if (isBg(img)) {
+          img.style.backgroundSize = "".concat(width, "px");
+        }
+
+        img.style['transition'] = 'filter 1s';
+        setBlur(img, 10);
+        var image = new Image();
+        image.src = newUrl;
+
+        image.onload = function () {
+          setBlur(img, 0);
+          setImage(img, newUrl);
+        };
+      } else {
+        setImage(img, newUrl);
+      }
+    });
+  }
+
+  ;
+
+  (function webpDetection(callback, enabled) {
+    if (!enabled) {
+      return callback(false);
+    }
+
+    var img = new Image();
+    img.src = 'data:image/webp;base64,UklGRh4AAABXRUJQVlA4TBEAAAAvAAAAAAfQ//73v/+BiOh/AAA=';
+    img.onload = callback.bind(this, true);
+    img.onerror = callback.bind(this, false);
+  })(function (webSupport) {
+    localOptions.webpSupport = webSupport;
+    lookup(document.querySelectorAll("[".concat(localOptions.imgPropKey, "],[").concat(localOptions.bgPropKey, "]")));
+    new MutationObserver(function (mutationsList) {
+      for (var mutation of mutationsList) {
+        if (mutation.type === 'childList') {
+          lookup(mutation.addedNodes);
+        }
+      }
+    }).observe(document.querySelector('body'), {
+      attributes: true,
+      childList: true,
+      subtree: true
+    });
+  }, localOptions.webpEnabled);
+})();
