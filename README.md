@@ -3,7 +3,7 @@
 ```html
 <script type="text/javascript">
     window.ImageBoss = {
-        authorisedHosts: ['www.igorescobar.com'],
+        authorisedHosts: ['www.your-authorised-host.com'],
         devMode: false,
         blurEnabled: true,
         lowResolutionFirstEnabled: true,
