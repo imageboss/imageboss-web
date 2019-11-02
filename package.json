@@ -1,0 +1,38 @@
+{
+  "name": "imageboss-web",
+  "version": "0.0.0-development",
+  "description": "Automatically apply ImageBoss URLs to your website images.",
+  "main": "imageboss.js",
+  "directories": {
+    "test": "test"
+  },
+  "browserslist": "> 0.25%, not dead",
+  "scripts": {
+    "build": "babel src -d dist && babel dist/imageboss.js --presets minify > dist/imageboss.min.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "semantic-release": "semantic-release"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/imageboss/imageboss-web.git"
+  },
+  "keywords": [
+    "imageboss",
+    "imageboss-web",
+    "javascript",
+    "browser"
+  ],
+  "author": "ImageBoss",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/imageboss/imageboss-web/issues"
+  },
+  "homepage": "https://github.com/imageboss/imageboss-web#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.6.4",
+    "@babel/core": "^7.6.4",
+    "@babel/preset-env": "^7.6.3",
+    "babel-preset-minify": "^0.5.1",
+    "semantic-release": "^15.13.29"
+  }
+}
