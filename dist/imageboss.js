@@ -3,6 +3,8 @@
 /* Copyright © 2019 ImageBoss. All rights reserved. */
 (function () {
   var ImageBoss = window.ImageBoss;
+  var serviceHost = 'img.imageboss.me';
+  var serviceUrl = "https://".concat(serviceHost);
   var localOptions = {
     propKey: 'data-imageboss',
     imgPropKey: 'data-imageboss-src',
@@ -27,7 +29,6 @@
       height,
       options
     } = _ref;
-    var serviceUrl = 'https://img.imageboss.me';
     var template = '/:operation/:options/';
 
     if (operation === 'cover') {
@@ -76,7 +77,7 @@
 
       var src = img.getAttribute(localOptions.imgPropKey) || img.getAttribute(localOptions.bgPropKey);
       var matchPattern = RegExp(ImageBoss.authorisedHosts.join('|'));
-      return src.match(matchPattern);
+      return src.match(matchPattern) && !src.match(serviceHost);
     }).forEach(img => {
       var url = img.getAttribute(localOptions.imgPropKey) || img.getAttribute(localOptions.bgPropKey);
       var operation = img.getAttribute("".concat(localOptions.propKey, "-operation")) || 'width';

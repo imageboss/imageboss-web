@@ -1,6 +1,8 @@
 /* Copyright © 2019 ImageBoss. All rights reserved. */
 (function (){
     const ImageBoss = window.ImageBoss;
+    const serviceHost = 'img.imageboss.me';
+    const serviceUrl = `https://${serviceHost}`;
     const localOptions = {
         propKey: 'data-imageboss',
         imgPropKey: 'data-imageboss-src',
@@ -18,7 +20,7 @@
     }
 
     function getUrl(src, { operation, coverMode, width, height, options }) {
-        const serviceUrl = 'https://img.imageboss.me';
+
         let template = '/:operation/:options/';
 
         if (operation === 'cover') {
@@ -77,9 +79,9 @@
 
                 const src = img.getAttribute(localOptions.imgPropKey) || img.getAttribute(localOptions.bgPropKey);
                 const matchPattern = RegExp(ImageBoss.authorisedHosts.join('|'));
-                return src.match(matchPattern);
+                return src.match(matchPattern) && !src.match(serviceHost);
             })
-            .forEach((img) => {
+            .forEach(img => {
                 const url       = img.getAttribute(localOptions.imgPropKey) || img.getAttribute(localOptions.bgPropKey);
                 const operation = img.getAttribute(`${localOptions.propKey}-operation`) || 'width';
                 const coverMode = img.getAttribute(`${localOptions.propKey}-cover-mode`);
