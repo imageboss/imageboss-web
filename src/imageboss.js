@@ -79,7 +79,7 @@
 
                 const src = img.getAttribute(localOptions.imgPropKey) || img.getAttribute(localOptions.bgPropKey);
                 const matchPattern = RegExp(ImageBoss.authorisedHosts.join('|'));
-                return src.match(matchPattern) && !src.match(serviceHost);
+                return src && src.match(matchPattern) && !src.match(serviceHost);
             })
             .forEach(img => {
                 const url       = img.getAttribute(localOptions.imgPropKey) || img.getAttribute(localOptions.bgPropKey);

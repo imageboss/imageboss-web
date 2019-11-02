@@ -77,7 +77,7 @@
 
       var src = img.getAttribute(localOptions.imgPropKey) || img.getAttribute(localOptions.bgPropKey);
       var matchPattern = RegExp(ImageBoss.authorisedHosts.join('|'));
-      return src.match(matchPattern) && !src.match(serviceHost);
+      return src && src.match(matchPattern) && !src.match(serviceHost);
     }).forEach(img => {
       var url = img.getAttribute(localOptions.imgPropKey) || img.getAttribute(localOptions.bgPropKey);
       var operation = img.getAttribute("".concat(localOptions.propKey, "-operation")) || 'width';
