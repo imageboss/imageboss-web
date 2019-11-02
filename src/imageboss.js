@@ -51,6 +51,12 @@
         return !!element.getAttribute(`${localOptions.propKey}-bg-src`);
     }
 
+    function buildSrc(src) {
+        if (src && !src.match(/^https?:\/\//)) {
+            src = `${window.location.origin}/${src}`
+        }
+        return src;
+    }
     function setBlur(element, blur) {
         if (localOptions.blurEnabled) {
             element.style['-webkit-filter'] = `blur(${blur}px)`;
@@ -77,12 +83,8 @@
                     return false;
                 }
 
-                let src = img.getAttribute(localOptions.imgPropKey) || img.getAttribute(localOptions.bgPropKey);
+                const src = buildSrc(img.getAttribute(localOptions.imgPropKey) || img.getAttribute(localOptions.bgPropKey));
                 const matchPattern = RegExp(ImageBoss.authorisedHosts.join('|'));
-
-                if (src && !src.match(/^https?:\/\//)) {
-                    src = `${window.location.origin}/${src}`
-                }
 
                 return src && src.match(matchPattern) && !src.match(serviceHost);
             })
@@ -134,11 +136,11 @@
 
                     if (isBg(img)) {
                         img.style.backgroundSize = `${width}px`;
+                    } else {
+                        setBlur(img, 10);
                     }
 
                     img.style['transition'] = 'filter 1s';
-
-                    setBlur(img, 10);
 
                     const image = new Image();
                     image.src = newUrl;

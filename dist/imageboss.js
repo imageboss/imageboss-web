@@ -51,6 +51,14 @@
     return !!element.getAttribute("".concat(localOptions.propKey, "-bg-src"));
   }
 
+  function buildSrc(src) {
+    if (src && !src.match(/^https?:\/\//)) {
+      src = "".concat(window.location.origin, "/").concat(src);
+    }
+
+    return src;
+  }
+
   function setBlur(element, blur) {
     if (localOptions.blurEnabled) {
       element.style['-webkit-filter'] = "blur(".concat(blur, "px)");
@@ -75,13 +83,8 @@
         return false;
       }
 
-      var src = img.getAttribute(localOptions.imgPropKey) || img.getAttribute(localOptions.bgPropKey);
+      var src = buildSrc(img.getAttribute(localOptions.imgPropKey) || img.getAttribute(localOptions.bgPropKey));
       var matchPattern = RegExp(ImageBoss.authorisedHosts.join('|'));
-
-      if (src && !src.match(/^https?:\/\//)) {
-        src = "".concat(window.location.origin, "/").concat(src);
-      }
-
       return src && src.match(matchPattern) && !src.match(serviceHost);
     }).forEach(img => {
       var url = img.getAttribute(localOptions.imgPropKey) || img.getAttribute(localOptions.bgPropKey);
@@ -125,10 +128,11 @@
 
         if (isBg(img)) {
           img.style.backgroundSize = "".concat(width, "px");
+        } else {
+          setBlur(img, 10);
         }
 
         img.style['transition'] = 'filter 1s';
-        setBlur(img, 10);
         var image = new Image();
         image.src = newUrl;
 
