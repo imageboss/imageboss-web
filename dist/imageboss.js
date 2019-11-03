@@ -80,6 +80,18 @@
     return img.getBoundingClientRect().top <= window.innerHeight && img.getBoundingClientRect().bottom >= 0 && getComputedStyle(img).display !== "none";
   }
 
+  function isFullyLoaded(img) {
+    return img && getAttribute(img, 'loaded');
+  }
+
+  function getAttribute(img, attr) {
+    return img.getAttribute("".concat(localOptions.propKey, "-").concat(attr));
+  }
+
+  function setAttribute(img, attr, val) {
+    return img.getAttribute("".concat(localOptions.propKey, "-").concat(attr), val);
+  }
+
   function lookup(nodeList) {
     Array.from(nodeList).filter(img => {
       if (!img.getAttribute) {
@@ -89,9 +101,8 @@
       var originalSrc = img.getAttribute('src') || window.getComputedStyle(img).getPropertyValue('background-image');
       var src = buildSrc(img.getAttribute(localOptions.imgPropKey) || img.getAttribute(localOptions.bgPropKey));
       var matchPattern = RegExp(ImageBoss.authorisedHosts.join('|'));
-      return src && !originalSrc.match(serviceHost) && src.match(matchPattern) && isVisible(img);
+      return src && !isFullyLoaded(img) && src.match(matchPattern);
     }).forEach(img => {
-      console.log(img.src);
       var src = buildSrc(img.getAttribute(localOptions.imgPropKey) || img.getAttribute(localOptions.bgPropKey));
       var operation = img.getAttribute("".concat(localOptions.propKey, "-operation")) || 'width';
       var coverMode = img.getAttribute("".concat(localOptions.propKey, "-cover-mode"));
@@ -120,7 +131,12 @@
         options: options.filter(opts => !isBg(img) && !opts.match(/dpr/) || opts).filter(opts => opts).join(',')
       });
 
-      if (lowRes) {
+      if (!lowRes) {
+        return setImage(img, newUrl);
+      } // low res only down here
+
+
+      if (!getAttribute(img, 'low-res-loaded')) {
         options.push('quality:50');
         options.push('blur:20');
         var lowResUrl = getUrl(src, {
@@ -138,15 +154,18 @@
 
         setBlur(img, 10);
         img.style['transition'] = 'filter 1s';
+        setAttribute(img, 'low-res-loaded', true);
+      }
+
+      if (isVisible(img) && !getAttribute(img, 'loading')) {
+        setAttribute(img, 'loading', true);
         var image = new Image();
         image.src = newUrl;
-
-        image.onload = function () {
+        image.addEventListener('load', function () {
+          setAttribute(img, 'loaded', true);
           setBlur(img, 0);
           setImage(img, newUrl);
-        };
-      } else {
-        setImage(img, newUrl);
+        });
       }
     });
   }

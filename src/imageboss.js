@@ -56,6 +56,7 @@
         }
         return src;
     }
+
     function setBlur(element, blur) {
         if (localOptions.blurEnabled) {
             element.style['-webkit-filter'] = `blur(${blur}px)`;
@@ -78,6 +79,18 @@
         return (img.getBoundingClientRect().top <= window.innerHeight && img.getBoundingClientRect().bottom >= 0) && getComputedStyle(img).display !== "none"
     }
 
+    function isFullyLoaded(img) {
+        return img && getAttribute(img, 'loaded');
+    }
+
+    function getAttribute(img, attr) {
+        return img.getAttribute(`${localOptions.propKey}-${attr}`);
+    }
+
+    function setAttribute(img, attr, val) {
+        return img.getAttribute(`${localOptions.propKey}-${attr}`, val);
+    }
+
     function lookup(nodeList) {
         Array
             .from(nodeList)
@@ -90,10 +103,9 @@
                 const src = buildSrc(img.getAttribute(localOptions.imgPropKey) || img.getAttribute(localOptions.bgPropKey));
                 const matchPattern = RegExp(ImageBoss.authorisedHosts.join('|'));
 
-                return src && !originalSrc.match(serviceHost) && src.match(matchPattern) && isVisible(img);
+                return src && !isFullyLoaded(img) && src.match(matchPattern);
             })
             .forEach(img => {
-                console.log(img.src)
                 const src       = buildSrc(img.getAttribute(localOptions.imgPropKey) || img.getAttribute(localOptions.bgPropKey));
                 const operation = img.getAttribute(`${localOptions.propKey}-operation`) || 'width';
                 const coverMode = img.getAttribute(`${localOptions.propKey}-cover-mode`);
@@ -124,7 +136,12 @@
                         .filter(opts => opts).join(','),
                 });
 
-                if (lowRes) {
+                if (!lowRes) {
+                    return setImage(img, newUrl);
+                }
+
+                // low res only down here
+                if (!getAttribute(img, 'low-res-loaded')) {
                     options.push('quality:50');
                     options.push('blur:20');
 
@@ -147,16 +164,19 @@
                     setBlur(img, 10);
 
                     img.style['transition'] = 'filter 1s';
+                    setAttribute(img, 'low-res-loaded', true);
+                }
+
+                if (isVisible(img) && !getAttribute(img, 'loading')) {
+                    setAttribute(img, 'loading', true);
 
                     const image = new Image();
                     image.src = newUrl;
-                    image.onload = function() {
+                    image.addEventListener('load', function() {
+                        setAttribute(img, 'loaded', true);
                         setBlur(img, 0);
                         setImage(img, newUrl);
-                    }
-
-                } else {
-                    setImage(img, newUrl);
+                    });
                 }
             });
     };
