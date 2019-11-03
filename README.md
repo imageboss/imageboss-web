@@ -5,6 +5,7 @@
 * Detect Retina Displays (High Density) and loads images properly.
 * Automatically requests images with appropriate sizes based on your HTML/CSS definitions.
 * Requests a low resolution version of your image while loads the high resolution one in background.
+* Lazy load images.
 
 
 ## Setup
@@ -19,7 +20,7 @@ Add this snippet right before the `</body>` tag (at the end of your document).
         webpEnabled: true,
     };
 </script>
-<script src="//cdn.jsdelivr.net/gh/imageboss/imageboss-web@1.0.4/dist/imageboss.min.js" type="text/javascript"></script>
+<script src="//cdn.jsdelivr.net/gh/imageboss/imageboss-web@1.0.5/dist/imageboss.min.js" type="text/javascript"></script>
 ```
 
 Replace your `<img />` tags from this (example):

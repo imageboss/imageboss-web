@@ -76,16 +76,22 @@
     }
   }
 
+  function isVisible(img) {
+    return img.getBoundingClientRect().top <= window.innerHeight && img.getBoundingClientRect().bottom >= 0 && getComputedStyle(img).display !== "none";
+  }
+
   function lookup(nodeList) {
     Array.from(nodeList).filter(img => {
       if (!img.getAttribute) {
         return false;
       }
 
+      var originalSrc = img.getAttribute('src') || window.getComputedStyle(img).getPropertyValue('background-image');
       var src = buildSrc(img.getAttribute(localOptions.imgPropKey) || img.getAttribute(localOptions.bgPropKey));
       var matchPattern = RegExp(ImageBoss.authorisedHosts.join('|'));
-      return src && src.match(matchPattern) && !src.match(serviceHost);
+      return src && !originalSrc.match(serviceHost) && src.match(matchPattern) && isVisible(img);
     }).forEach(img => {
+      console.log(img.src);
       var src = buildSrc(img.getAttribute(localOptions.imgPropKey) || img.getAttribute(localOptions.bgPropKey));
       var operation = img.getAttribute("".concat(localOptions.propKey, "-operation")) || 'width';
       var coverMode = img.getAttribute("".concat(localOptions.propKey, "-cover-mode"));
@@ -158,7 +164,8 @@
     img.onerror = callback.bind(this, false);
   })(function (webSupport) {
     localOptions.webpSupport = webSupport;
-    lookup(document.querySelectorAll("[".concat(localOptions.imgPropKey, "],[").concat(localOptions.bgPropKey, "]")));
+    var defaultSelector = "[".concat(localOptions.imgPropKey, "],[").concat(localOptions.bgPropKey, "]");
+    lookup(document.querySelectorAll(defaultSelector));
     new MutationObserver(function (mutationsList) {
       for (var mutation of mutationsList) {
         if (mutation.type === 'childList') {
@@ -170,5 +177,8 @@
       childList: true,
       subtree: true
     });
+    document.addEventListener("scroll", () => lookup(document.querySelectorAll(defaultSelector)));
+    window.addEventListener("resize", () => lookup(document.querySelectorAll(defaultSelector)));
+    window.addEventListener("orientationchange", () => lookup(document.querySelectorAll(defaultSelector)));
   }, localOptions.webpEnabled);
 })();

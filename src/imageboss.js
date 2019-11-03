@@ -74,6 +74,10 @@
         }
     }
 
+    function isVisible(img) {
+        return (img.getBoundingClientRect().top <= window.innerHeight && img.getBoundingClientRect().bottom >= 0) && getComputedStyle(img).display !== "none"
+    }
+
     function lookup(nodeList) {
         Array
             .from(nodeList)
@@ -82,12 +86,14 @@
                     return false;
                 }
 
+                const originalSrc = img.getAttribute('src') || window.getComputedStyle(img).getPropertyValue('background-image');
                 const src = buildSrc(img.getAttribute(localOptions.imgPropKey) || img.getAttribute(localOptions.bgPropKey));
                 const matchPattern = RegExp(ImageBoss.authorisedHosts.join('|'));
 
-                return src && src.match(matchPattern) && !src.match(serviceHost);
+                return src && !originalSrc.match(serviceHost) && src.match(matchPattern) && isVisible(img);
             })
             .forEach(img => {
+                console.log(img.src)
                 const src       = buildSrc(img.getAttribute(localOptions.imgPropKey) || img.getAttribute(localOptions.bgPropKey));
                 const operation = img.getAttribute(`${localOptions.propKey}-operation`) || 'width';
                 const coverMode = img.getAttribute(`${localOptions.propKey}-cover-mode`);
@@ -166,10 +172,9 @@
         img.onerror = callback.bind(this, false);
     })(function(webSupport) {
         localOptions.webpSupport = webSupport;
+        const defaultSelector = `[${localOptions.imgPropKey}],[${localOptions.bgPropKey}]`;
 
-        lookup(
-            document.querySelectorAll(`[${localOptions.imgPropKey}],[${localOptions.bgPropKey}]`)
-        );
+        lookup(document.querySelectorAll(defaultSelector));
 
         new MutationObserver(function(mutationsList) {
             for (let mutation of mutationsList) {
@@ -181,5 +186,9 @@
             document.querySelector('body'),
             { attributes: true, childList: true, subtree: true }
         );
+
+        document.addEventListener("scroll", () => lookup(document.querySelectorAll(defaultSelector)));
+        window.addEventListener("resize", () => lookup(document.querySelectorAll(defaultSelector)));
+        window.addEventListener("orientationchange", () => lookup(document.querySelectorAll(defaultSelector)));
     }, localOptions.webpEnabled);
 })();
