@@ -131,6 +131,10 @@
         options: options.filter(opts => !isBg(img) && !opts.match(/dpr/) || opts).filter(opts => opts).join(',')
       });
 
+      if (isBg(img)) {
+        img.style.backgroundSize = "100%";
+      }
+
       if (!lowRes && isVisible(img)) {
         setAttribute(img, 'loaded', true);
         return setImage(img, newUrl);
@@ -148,11 +152,6 @@
             options: options.filter(opts => !opts.match(/dpr/)).filter(opts => opts).join(',')
           });
           setImage(img, lowResUrl);
-
-          if (isBg(img)) {
-            img.style.backgroundSize = "".concat(width, "px");
-          }
-
           setBlur(img, 10);
           img.style['transition'] = 'filter 1s';
           setAttribute(img, 'low-res-loaded', true);

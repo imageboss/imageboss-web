@@ -137,7 +137,7 @@
                 });
 
                 if (isBg(img)) {
-                    img.style.backgroundSize = `${width}px`;
+                    img.style.backgroundSize = `100%`;
                 }
 
                 if (!lowRes && isVisible(img)) {
