@@ -52,7 +52,7 @@
 
   function buildSrc(src) {
     if (src && !src.match(/^https?:\/\//)) {
-      src = "".concat(window.location.origin, "/").concat(src);
+      src = "".concat(window.location.origin, "/").concat(src.replace(/^\//, ''));
     }
 
     return src;
@@ -98,7 +98,6 @@
         return false;
       }
 
-      var originalSrc = img.getAttribute('src') || window.getComputedStyle(img).getPropertyValue('background-image');
       var src = buildSrc(img.getAttribute(localOptions.imgPropKey) || img.getAttribute(localOptions.bgPropKey));
       var matchPattern = RegExp(ImageBoss.authorisedHosts.join('|'));
       return src && !isFullyLoaded(img) && src.match(matchPattern);
@@ -112,6 +111,7 @@
       var options = (img.getAttribute("".concat(localOptions.propKey, "-options")) || '').split(',');
 
       if (localOptions.devMode) {
+        setAttribute(img, 'loaded', true);
         return setImage(img, src);
       }
 

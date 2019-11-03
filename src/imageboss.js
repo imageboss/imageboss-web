@@ -52,7 +52,7 @@
 
     function buildSrc(src) {
         if (src && !src.match(/^https?:\/\//)) {
-            src = `${window.location.origin}/${src}`
+            src = `${window.location.origin}/${src.replace(/^\//,'')}`;
         }
         return src;
     }
@@ -99,7 +99,6 @@
                     return false;
                 }
 
-                const originalSrc = img.getAttribute('src') || window.getComputedStyle(img).getPropertyValue('background-image');
                 const src = buildSrc(img.getAttribute(localOptions.imgPropKey) || img.getAttribute(localOptions.bgPropKey));
                 const matchPattern = RegExp(ImageBoss.authorisedHosts.join('|'));
 
@@ -115,6 +114,7 @@
                 const options   = (img.getAttribute(`${localOptions.propKey}-options`) || '').split(',');
 
                 if (localOptions.devMode) {
+                    setAttribute(img, 'loaded', true);
                     return setImage(img, src);
                 }
 
