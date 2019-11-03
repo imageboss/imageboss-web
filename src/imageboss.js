@@ -4,15 +4,14 @@
     const serviceHost = 'img.imageboss.me';
     const serviceUrl = `https://${serviceHost}`;
     const localOptions = {
-        propKey: 'data-imageboss',
-        imgPropKey: 'data-imageboss-src',
-        bgPropKey: 'data-imageboss-bg-src',
+        propKey: 'imageboss',
+        imgPropKey: 'imageboss-src',
+        bgPropKey: 'imageboss-bg-src',
         dprSupport: window.devicePixelRatio,
         devMode: isEnabled('devMode', false),
         dprEnabled: isEnabled('dprEnabled', true),
         webpEnabled: isEnabled('webpEnabled', true),
         blurEnabled: isEnabled('blurEnabled', true),
-        lowResolutionFirstEnabled: isEnabled('lowResolutionFirstEnabled', true),
     };
 
     function isEnabled(prop, fallback) {
@@ -92,6 +91,7 @@
                 const src       = buildSrc(img.getAttribute(localOptions.imgPropKey) || img.getAttribute(localOptions.bgPropKey));
                 const operation = img.getAttribute(`${localOptions.propKey}-operation`) || 'width';
                 const coverMode = img.getAttribute(`${localOptions.propKey}-cover-mode`);
+                const lowRes    = !!img.getAttribute(`${localOptions.propKey}-low-res`);
                 const width     = img.getAttribute('width') || img.clientWidth;
                 const height    = img.getAttribute('height') || img.clientHeight;
                 const options   = (img.getAttribute(`${localOptions.propKey}-options`) || '').split(',');
@@ -118,7 +118,7 @@
                         .filter(opts => opts).join(','),
                 });
 
-                if (localOptions.lowResolutionFirstEnabled) {
+                if (lowRes) {
                     options.push('quality:50');
                     options.push('blur:20');
 
@@ -136,9 +136,9 @@
 
                     if (isBg(img)) {
                         img.style.backgroundSize = `${width}px`;
-                    } else {
-                        setBlur(img, 10);
                     }
+
+                    setBlur(img, 10);
 
                     img.style['transition'] = 'filter 1s';
 

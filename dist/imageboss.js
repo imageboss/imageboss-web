@@ -6,15 +6,14 @@
   var serviceHost = 'img.imageboss.me';
   var serviceUrl = "https://".concat(serviceHost);
   var localOptions = {
-    propKey: 'data-imageboss',
-    imgPropKey: 'data-imageboss-src',
-    bgPropKey: 'data-imageboss-bg-src',
+    propKey: 'imageboss',
+    imgPropKey: 'imageboss-src',
+    bgPropKey: 'imageboss-bg-src',
     dprSupport: window.devicePixelRatio,
     devMode: isEnabled('devMode', false),
     dprEnabled: isEnabled('dprEnabled', true),
     webpEnabled: isEnabled('webpEnabled', true),
-    blurEnabled: isEnabled('blurEnabled', true),
-    lowResolutionFirstEnabled: isEnabled('lowResolutionFirstEnabled', true)
+    blurEnabled: isEnabled('blurEnabled', true)
   };
 
   function isEnabled(prop, fallback) {
@@ -90,6 +89,7 @@
       var src = buildSrc(img.getAttribute(localOptions.imgPropKey) || img.getAttribute(localOptions.bgPropKey));
       var operation = img.getAttribute("".concat(localOptions.propKey, "-operation")) || 'width';
       var coverMode = img.getAttribute("".concat(localOptions.propKey, "-cover-mode"));
+      var lowRes = !!img.getAttribute("".concat(localOptions.propKey, "-low-res"));
       var width = img.getAttribute('width') || img.clientWidth;
       var height = img.getAttribute('height') || img.clientHeight;
       var options = (img.getAttribute("".concat(localOptions.propKey, "-options")) || '').split(',');
@@ -114,7 +114,7 @@
         options: options.filter(opts => !isBg(img) && !opts.match(/dpr/) || opts).filter(opts => opts).join(',')
       });
 
-      if (localOptions.lowResolutionFirstEnabled) {
+      if (lowRes) {
         options.push('quality:50');
         options.push('blur:20');
         var lowResUrl = getUrl(src, {
@@ -128,10 +128,9 @@
 
         if (isBg(img)) {
           img.style.backgroundSize = "".concat(width, "px");
-        } else {
-          setBlur(img, 10);
         }
 
+        setBlur(img, 10);
         img.style['transition'] = 'filter 1s';
         var image = new Image();
         image.src = newUrl;
