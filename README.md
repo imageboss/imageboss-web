@@ -18,7 +18,7 @@ Add this snippet right before the `</body>` tag (at the end of your document).
 Replace your `<img />` tags from this (example):
 ```html
 <img src="myimage.jpg" width="150" />
-``
+```
 to
 ```html
 <img
