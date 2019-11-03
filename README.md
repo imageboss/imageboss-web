@@ -1,10 +1,10 @@
 # ImageBoss Web
 
 ## Features
-* Detect/request webp images.
+* Detect/request WebP images.
 * Detect Retina Displays (High Density) and loads images properly.
 * Automatically requests images with appropriate sizes based on your HTML/CSS definitions.
-* Requests a low resolution version of your image while loads the high resolution one in background.
+* Requests a low-resolution version of your image while loads the high resolution one in the background.
 * Lazy load images.
 
 
