@@ -136,6 +136,10 @@
                         .filter(opts => opts).join(','),
                 });
 
+                if (isBg(img)) {
+                    img.style.backgroundSize = `${width}px`;
+                }
+
                 if (!lowRes && isVisible(img)) {
                     setAttribute(img, 'loaded', true);
                     return setImage(img, newUrl);
@@ -157,11 +161,6 @@
                         });
 
                         setImage(img, lowResUrl);
-
-                        if (isBg(img)) {
-                            img.style.backgroundSize = `${width}px`;
-                        }
-
                         setBlur(img, 10);
 
                         img.style['transition'] = 'filter 1s';
