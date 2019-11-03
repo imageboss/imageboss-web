@@ -26,7 +26,8 @@ to
     data-imageboss-src="myimage.jpg"
     width="150"
 />
-``
+```
+
 * The transparent gif will help you validate your HTML and prevent the browser to load the default image “not found”.
 
 ## Usage
