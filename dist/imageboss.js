@@ -89,7 +89,7 @@
   }
 
   function setAttribute(img, attr, val) {
-    return img.getAttribute("".concat(localOptions.propKey, "-").concat(attr), val);
+    return img.setAttribute("".concat(localOptions.propKey, "-").concat(attr), val);
   }
 
   function lookup(nodeList) {
@@ -131,41 +131,43 @@
         options: options.filter(opts => !isBg(img) && !opts.match(/dpr/) || opts).filter(opts => opts).join(',')
       });
 
-      if (!lowRes) {
+      if (!lowRes && isVisible(img)) {
+        setAttribute(img, 'loaded', true);
         return setImage(img, newUrl);
-      } // low res only down here
-
-
-      if (!getAttribute(img, 'low-res-loaded')) {
-        options.push('quality:50');
-        options.push('blur:20');
-        var lowResUrl = getUrl(src, {
-          operation,
-          coverMode: coverMode,
-          width: Math.round(width * 0.4),
-          height: Math.round(height * 0.4),
-          options: options.filter(opts => !opts.match(/dpr/)).filter(opts => opts).join(',')
-        });
-        setImage(img, lowResUrl);
-
-        if (isBg(img)) {
-          img.style.backgroundSize = "".concat(width, "px");
-        }
-
-        setBlur(img, 10);
-        img.style['transition'] = 'filter 1s';
-        setAttribute(img, 'low-res-loaded', true);
       }
 
-      if (isVisible(img) && !getAttribute(img, 'loading')) {
-        setAttribute(img, 'loading', true);
-        var image = new Image();
-        image.src = newUrl;
-        image.addEventListener('load', function () {
-          setAttribute(img, 'loaded', true);
-          setBlur(img, 0);
-          setImage(img, newUrl);
-        });
+      if (lowRes) {
+        if (!getAttribute(img, 'low-res-loaded')) {
+          options.push('quality:50');
+          options.push('blur:20');
+          var lowResUrl = getUrl(src, {
+            operation,
+            coverMode: coverMode,
+            width: Math.round(width * 0.4),
+            height: Math.round(height * 0.4),
+            options: options.filter(opts => !opts.match(/dpr/)).filter(opts => opts).join(',')
+          });
+          setImage(img, lowResUrl);
+
+          if (isBg(img)) {
+            img.style.backgroundSize = "".concat(width, "px");
+          }
+
+          setBlur(img, 10);
+          img.style['transition'] = 'filter 1s';
+          setAttribute(img, 'low-res-loaded', true);
+        }
+
+        if (isVisible(img) && !getAttribute(img, 'loading')) {
+          setAttribute(img, 'loading', true);
+          var image = new Image();
+          image.src = newUrl;
+          image.addEventListener('load', function () {
+            setAttribute(img, 'loaded', true);
+            setBlur(img, 0);
+            setImage(img, newUrl);
+          });
+        }
       }
     });
   }
