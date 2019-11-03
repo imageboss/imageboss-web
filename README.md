@@ -1,11 +1,19 @@
 # ImageBoss Web
 
+## Features
+* Detect/request webp images.
+* Detect Retina Displays (High Density) and loads images properly.
+* Automatically requests images with appropriate sizes based on where it is inserted.
+* Requests a low resolution version of your image while loads the high resolution one in background.
+
+
 ## Setup
 Add this snippet right before the `</body>` tag (at the end of your document).
 ```html
 <script type="text/javascript">
     window.ImageBoss = {
         authorisedHosts: ['www.your-authorised-host.com'],
+        // defaults
         devMode: false,
         blurEnabled: true,
         webpEnabled: true,
