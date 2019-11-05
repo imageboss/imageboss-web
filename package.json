@@ -1,6 +1,6 @@
 {
   "name": "imageboss-web",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "Automatically apply ImageBoss URLs to your website images.",
   "main": "imageboss.js",
   "directories": {
