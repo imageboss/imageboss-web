@@ -106,11 +106,11 @@
             })
             .forEach(img => {
                 const src       = buildSrc(img.getAttribute(localOptions.imgPropKey) || img.getAttribute(localOptions.bgPropKey));
-                const operation = img.getAttribute(`${localOptions.propKey}-operation`) || 'width';
-                const coverMode = img.getAttribute(`${localOptions.propKey}-cover-mode`);
-                const lowRes    = !!img.getAttribute(`${localOptions.propKey}-low-res`);
-                const width     = img.getAttribute('width') || img.clientWidth;
-                const height    = img.getAttribute('height') || img.clientHeight;
+                const operation = getAttribute(img, 'operation') || 'width';
+                const coverMode = getAttribute(img, 'cover-mode');
+                const lowRes    = !!getAttribute(img, 'low-res');
+                const width     = getAttribute(img, 'width') || img.getAttribute('width') || img.clientWidth;
+                const height    = getAttribute(img, 'height') || img.getAttribute('height') || img.clientHeight;
                 const options   = (img.getAttribute(`${localOptions.propKey}-options`) || '').split(',');
 
                 if (localOptions.devMode) {

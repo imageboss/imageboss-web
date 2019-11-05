@@ -103,11 +103,11 @@
       return src && !isFullyLoaded(img) && src.match(matchPattern);
     }).forEach(img => {
       var src = buildSrc(img.getAttribute(localOptions.imgPropKey) || img.getAttribute(localOptions.bgPropKey));
-      var operation = img.getAttribute("".concat(localOptions.propKey, "-operation")) || 'width';
-      var coverMode = img.getAttribute("".concat(localOptions.propKey, "-cover-mode"));
-      var lowRes = !!img.getAttribute("".concat(localOptions.propKey, "-low-res"));
-      var width = img.getAttribute('width') || img.clientWidth;
-      var height = img.getAttribute('height') || img.clientHeight;
+      var operation = getAttribute(img, 'operation') || 'width';
+      var coverMode = getAttribute(img, 'cover-mode');
+      var lowRes = !!getAttribute(img, 'low-res');
+      var width = getAttribute(img, 'width') || img.getAttribute('width') || img.clientWidth;
+      var height = getAttribute(img, 'height') || img.getAttribute('height') || img.clientHeight;
       var options = (img.getAttribute("".concat(localOptions.propKey, "-options")) || '').split(',');
 
       if (localOptions.devMode) {

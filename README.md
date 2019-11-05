@@ -20,7 +20,7 @@ Add this snippet right before the `</body>` tag (at the end of your document).
         webpEnabled: true,
     };
 </script>
-<script src="//cdn.jsdelivr.net/gh/imageboss/imageboss-web@1.0.13/dist/imageboss.min.js" type="text/javascript"></script>
+<script src="//cdn.jsdelivr.net/gh/imageboss/imageboss-web@1.0.14/dist/imageboss.min.js" type="text/javascript"></script>
 ```
 
 Replace your `<img />` tags from this (example):
@@ -64,6 +64,38 @@ It supports any of the operations available on: https://imageboss.me/docs
     imageboss-operation="width"
 />
 ```
+### imageboss-width
+It's not necessary but can be helpful when you are displaying images with relative size.
+In order to detect the right width of your image we:
+
+* First look at the `imageboss-width` attribute,
+* Then, we look into the `width` HTML attribute.
+* Then, doesn't exist we look into the `img.clientWidth` size.
+
+```html
+<img
+    imageboss-src="https://mysite.com/image.jpg"
+    imageboss-operation="width"
+    imageboss-width="500"
+/>
+```
+
+### imageboss-height
+It's not necessary but can be helpful when you are displaying images with relative size.
+In order to detect the right height of your image we:
+
+* First look at the `imageboss-height` attribute,
+* Then, we look into the `height` HTML attribute.
+* Then, doesn't exist we look into the `img.clientHeight` size.
+
+```html
+<img
+    imageboss-src="https://mysite.com/image.jpg"
+    imageboss-operation="cover"
+    imageboss-height="500"
+/>
+```
+
 ### imageboss-cover-mode
 For more options: https://imageboss.me/docs/operations/cover
 ```html
