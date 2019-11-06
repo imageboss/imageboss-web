@@ -16,7 +16,7 @@ Add this snippet right before the `</body>` tag (at the end of your document).
         authorisedHosts: ['www.your-authorised-host.com'],
         // defaults
         devMode: false,
-        opacityEnabled: true,
+        animationEnabled: true,
         webpEnabled: true,
     };
 </script>

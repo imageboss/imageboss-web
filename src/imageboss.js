@@ -11,7 +11,7 @@
         devMode: isEnabled('devMode', false),
         dprEnabled: isEnabled('dprEnabled', true),
         webpEnabled: isEnabled('webpEnabled', true),
-        opacityEnabled: isEnabled('opacityEnabled', true),
+        animationEnabled: isEnabled('animationEnabled', true),
     };
 
     function isEnabled(prop, fallback) {
@@ -58,7 +58,7 @@
     }
 
     function setOpacity(element, opacity) {
-        if (localOptions.opacityEnabled) {
+        if (localOptions.animationEnabled) {
             element.style.opacity = `${opacity}`;
         }
     }
