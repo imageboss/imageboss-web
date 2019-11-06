@@ -88,6 +88,12 @@
     return img.setAttribute("".concat(localOptions.propKey, "-").concat(attr), val);
   }
 
+  function waitToBeLoaded(url, callback) {
+    var image = new Image();
+    image.src = url;
+    image.addEventListener('load', callback);
+  }
+
   function lookup(nodeList) {
     Array.from(nodeList).filter(img => {
       if (!img.getAttribute) {
@@ -126,19 +132,23 @@
         height,
         options: options.filter(opts => !isBg(img) && !opts.match(/dpr/) || opts).filter(opts => opts).join(',')
       });
+      setOpacity(img, 0.1);
+      img.style['transition'] = 'opacity 1.5s';
 
       if (isBg(img)) {
         img.style.backgroundSize = "100%";
       }
 
       if (!lowRes && isVisible(img)) {
-        setAttribute(img, 'loaded', true);
-        return setImage(img, newUrl);
+        setImage(img, newUrl);
+        waitToBeLoaded(newUrl, function () {
+          setAttribute(img, 'loaded', true);
+          setOpacity(img, 1.0);
+        });
+        return;
       }
 
       if (lowRes) {
-        setOpacity(img, 0.1);
-
         if (!getAttribute(img, 'low-res-loaded')) {
           options.push('quality:01');
           var lowResUrl = getUrl(src, {
@@ -150,14 +160,11 @@
           });
           setImage(img, lowResUrl);
           setAttribute(img, 'low-res-loaded', true);
-          img.style['transition'] = 'opacity 1.5s';
         }
 
         if (isVisible(img) && !getAttribute(img, 'loading')) {
           setAttribute(img, 'loading', true);
-          var image = new Image();
-          image.src = newUrl;
-          image.addEventListener('load', function () {
+          waitToBeLoaded(newUrl, function () {
             setAttribute(img, 'loaded', true);
             setImage(img, newUrl);
             setOpacity(img, 1.0);
