@@ -11,7 +11,7 @@
         devMode: isEnabled('devMode', false),
         dprEnabled: isEnabled('dprEnabled', true),
         webpEnabled: isEnabled('webpEnabled', true),
-        blurEnabled: isEnabled('blurEnabled', true),
+        opacityEnabled: isEnabled('opacityEnabled', true),
     };
 
     function isEnabled(prop, fallback) {
@@ -57,13 +57,9 @@
         return src;
     }
 
-    function setBlur(element, blur) {
-        if (localOptions.blurEnabled) {
-            element.style['-webkit-filter'] = `blur(${blur}px)`;
-            element.style['-moz-filter'] = `blur(${blur}px)`;
-            element.style['-o-filter'] = `blur(${blur}px)`;
-            element.style['-ms-filter'] = `blur(${blur}px)`;
-            element.style['filter'] = `blur(${blur}px)`;
+    function setOpacity(element, opacity) {
+        if (localOptions.opacityEnabled) {
+            element.style.opacity = `${opacity}`;
         }
     }
 
@@ -76,7 +72,7 @@
     }
 
     function isVisible(img) {
-        return (img.getBoundingClientRect().top <= window.innerHeight && img.getBoundingClientRect().bottom >= 0) && getComputedStyle(img).display !== "none"
+        return (img.getBoundingClientRect().top <= (window.innerHeight + 300) && img.getBoundingClientRect().bottom >= 0) && getComputedStyle(img).display !== "none"
     }
 
     function isFullyLoaded(img) {
@@ -146,6 +142,7 @@
                 }
 
                 if (lowRes) {
+                    setOpacity(img, 0.1);
                     if (!getAttribute(img, 'low-res-loaded')) {
                         options.push('quality:01');
 
@@ -155,26 +152,26 @@
                             width: Math.round(width * 0.4),
                             height: Math.round(height * 0.4),
                             options: options
-                                .filter(opts => !opts.match(/dpr/))
-                                .filter(opts => opts).join(','),
+                            .filter(opts => !opts.match(/dpr/))
+                            .filter(opts => opts).join(','),
                         });
 
                         setImage(img, lowResUrl);
-                        setBlur(img, 20);
-
-                        img.style['transition'] = 'filter 1s';
                         setAttribute(img, 'low-res-loaded', true);
+
+                        img.style['transition'] = 'opacity 1.5s';
                     }
 
                     if (isVisible(img) && !getAttribute(img, 'loading')) {
+
                         setAttribute(img, 'loading', true);
 
                         const image = new Image();
                         image.src = newUrl;
                         image.addEventListener('load', function() {
                             setAttribute(img, 'loaded', true);
-                            setBlur(img, 0);
                             setImage(img, newUrl);
+                            setOpacity(img, 1.0);
                         });
                     }
                 }

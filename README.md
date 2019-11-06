@@ -16,11 +16,11 @@ Add this snippet right before the `</body>` tag (at the end of your document).
         authorisedHosts: ['www.your-authorised-host.com'],
         // defaults
         devMode: false,
-        blurEnabled: true,
+        opacityEnabled: true,
         webpEnabled: true,
     };
 </script>
-<script src="//cdn.jsdelivr.net/gh/imageboss/imageboss-web@1.0.14/dist/imageboss.min.js" type="text/javascript"></script>
+<script src="//cdn.jsdelivr.net/gh/imageboss/imageboss-web@1.0.15/dist/imageboss.min.js" type="text/javascript"></script>
 ```
 
 Replace your `<img />` tags from this (example):
