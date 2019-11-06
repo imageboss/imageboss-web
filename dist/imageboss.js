@@ -13,7 +13,7 @@
     devMode: isEnabled('devMode', false),
     dprEnabled: isEnabled('dprEnabled', true),
     webpEnabled: isEnabled('webpEnabled', true),
-    blurEnabled: isEnabled('blurEnabled', true)
+    opacityEnabled: isEnabled('opacityEnabled', true)
   };
 
   function isEnabled(prop, fallback) {
@@ -58,13 +58,9 @@
     return src;
   }
 
-  function setBlur(element, blur) {
-    if (localOptions.blurEnabled) {
-      element.style['-webkit-filter'] = "blur(".concat(blur, "px)");
-      element.style['-moz-filter'] = "blur(".concat(blur, "px)");
-      element.style['-o-filter'] = "blur(".concat(blur, "px)");
-      element.style['-ms-filter'] = "blur(".concat(blur, "px)");
-      element.style['filter'] = "blur(".concat(blur, "px)");
+  function setOpacity(element, opacity) {
+    if (localOptions.opacityEnabled) {
+      element.style.opacity = "".concat(opacity);
     }
   }
 
@@ -77,7 +73,7 @@
   }
 
   function isVisible(img) {
-    return img.getBoundingClientRect().top <= window.innerHeight && img.getBoundingClientRect().bottom >= 0 && getComputedStyle(img).display !== "none";
+    return img.getBoundingClientRect().top <= window.innerHeight + 300 && img.getBoundingClientRect().bottom >= 0 && getComputedStyle(img).display !== "none";
   }
 
   function isFullyLoaded(img) {
@@ -141,6 +137,8 @@
       }
 
       if (lowRes) {
+        setOpacity(img, 0.1);
+
         if (!getAttribute(img, 'low-res-loaded')) {
           options.push('quality:01');
           var lowResUrl = getUrl(src, {
@@ -151,9 +149,8 @@
             options: options.filter(opts => !opts.match(/dpr/)).filter(opts => opts).join(',')
           });
           setImage(img, lowResUrl);
-          setBlur(img, 20);
-          img.style['transition'] = 'filter 1s';
           setAttribute(img, 'low-res-loaded', true);
+          img.style['transition'] = 'opacity 1.5s';
         }
 
         if (isVisible(img) && !getAttribute(img, 'loading')) {
@@ -162,8 +159,8 @@
           image.src = newUrl;
           image.addEventListener('load', function () {
             setAttribute(img, 'loaded', true);
-            setBlur(img, 0);
             setImage(img, newUrl);
+            setOpacity(img, 1.0);
           });
         }
       }
