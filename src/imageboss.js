@@ -94,6 +94,10 @@
         image.addEventListener('load', callback);
     }
 
+    function yieldValidSize(size) {
+        return size && !size.match(/%/) ? size : undefined;
+    }
+
     function lookup(nodeList) {
         Array
             .from(nodeList)
@@ -112,8 +116,8 @@
                 const operation = getAttribute(img, 'operation') || 'width';
                 const coverMode = getAttribute(img, 'cover-mode');
                 const lowRes    = !!getAttribute(img, 'low-res');
-                const width     = getAttribute(img, 'width') || img.getAttribute('width') || img.clientWidth;
-                const height    = getAttribute(img, 'height') || img.getAttribute('height') || img.clientHeight;
+                const width     = getAttribute(img, 'width') || yieldValidSize(img.getAttribute('width')) || img.clientWidth;
+                const height    = getAttribute(img, 'height') || yieldValidSize(img.getAttribute('height')) || img.clientHeight;
                 const options   = (img.getAttribute(`${localOptions.propKey}-options`) || '').split(',');
 
                 if (localOptions.devMode) {
