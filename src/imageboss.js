@@ -72,7 +72,8 @@
     }
 
     function isVisible(img) {
-        return (img.getBoundingClientRect().top <= (window.innerHeight + 300) && (img.getBoundingClientRect().bottom + 300) >= 0) && getComputedStyle(img).display !== "none"
+        return (img.getBoundingClientRect().top <= (window.innerHeight + 300) &&
+               (img.getBoundingClientRect().bottom + 300) >= 0) && getComputedStyle(img).display !== "none"
     }
 
     function isFullyLoaded(img) {
