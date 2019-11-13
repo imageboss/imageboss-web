@@ -7,7 +7,7 @@
         propKey: 'imageboss',
         imgPropKey: 'imageboss-src',
         bgPropKey: 'imageboss-bg-src',
-        dprSupport: window.devicePixelRatio,
+        dprSupport: window.devicePixelRatio > 1,
         lazyLoadDistance: isDefined('lazyLoadDistance', 1.0),
         devMode: isDefined('devMode', false),
         dprEnabled: isDefined('dprEnabled', true),
@@ -120,13 +120,14 @@
                 return src && !isFullyLoaded(img) && src.match(matchPattern);
             })
             .forEach(img => {
-                const src       = buildSrc(img.getAttribute(localOptions.imgPropKey) || img.getAttribute(localOptions.bgPropKey));
-                const operation = getAttribute(img, 'operation') || 'width';
-                const coverMode = getAttribute(img, 'cover-mode');
-                const lowRes    = !!getAttribute(img, 'low-res');
-                const width     = getAttribute(img, 'width') || yieldValidSize(img.getAttribute('width')) || img.clientWidth;
-                const height    = getAttribute(img, 'height') || yieldValidSize(img.getAttribute('height')) || img.clientHeight;
-                const options   = (img.getAttribute(`${localOptions.propKey}-options`) || '').split(',');
+                const src           = buildSrc(img.getAttribute(localOptions.imgPropKey) || img.getAttribute(localOptions.bgPropKey));
+                const operation     = getAttribute(img, 'operation') || 'width';
+                const coverMode     = getAttribute(img, 'cover-mode');
+                const lowRes        = !!getAttribute(img, 'low-res');
+                const dprDisabled   = getAttribute(img, 'dpr') === 'false';
+                const width         = getAttribute(img, 'width') || yieldValidSize(img.getAttribute('width')) || img.clientWidth;
+                const height        = getAttribute(img, 'height') || yieldValidSize(img.getAttribute('height')) || img.clientHeight;
+                const options       = (img.getAttribute(`${localOptions.propKey}-options`) || '').split(',');
 
                 if (localOptions.devMode) {
                     setAttribute(img, 'loaded', true);
@@ -137,7 +138,7 @@
                     options.push('format:webp');
                 }
 
-                if (localOptions.dprEnabled && localOptions.dprSupport > 1) {
+                if (localOptions.dprSupport && localOptions.dprEnabled && !dprDisabled) {
                     options.push('dpr:2');
                 }
 
@@ -173,7 +174,7 @@
 
                         const lowResUrl = getUrl(src, {
                             operation,
-                            coverMode: coverMode,
+                            coverMode,
                             width: Math.round(width * 0.4),
                             height: Math.round(height * 0.4),
                             options: options
@@ -183,8 +184,6 @@
 
                         setImage(img, lowResUrl);
                         setAttribute(img, 'low-res-loaded', true);
-
-
                     }
 
                     if (isVisible(img) && !getAttribute(img, 'loading')) {
