@@ -8,13 +8,15 @@
         imgPropKey: 'imageboss-src',
         bgPropKey: 'imageboss-bg-src',
         dprSupport: window.devicePixelRatio,
-        devMode: isEnabled('devMode', false),
-        dprEnabled: isEnabled('dprEnabled', true),
-        webpEnabled: isEnabled('webpEnabled', true),
-        animationEnabled: isEnabled('animationEnabled', true),
+        lazyLoadDistance: isDefined('lazyLoadDistance', 1.0),
+        devMode: isDefined('devMode', false),
+        dprEnabled: isDefined('dprEnabled', true),
+        webpEnabled: isDefined('webpEnabled', true),
+        animationEnabled: isDefined('animationEnabled', true),
+        isMobile: window.innerWidth <= 760,
     };
 
-    function isEnabled(prop, fallback) {
+    function isDefined(prop, fallback) {
         return ImageBoss[prop] !== undefined ? ImageBoss[prop] : fallback;
     }
 
@@ -72,8 +74,14 @@
     }
 
     function isVisible(img) {
-        return (img.getBoundingClientRect().top <= (window.innerHeight + 300) &&
-               (img.getBoundingClientRect().bottom + 300) >= 0) && getComputedStyle(img).display !== "none"
+        const leapSize = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+        let factor = localOptions.lazyLoadDistance;
+        if (localOptions.isMobile) { factor += 0.5; }
+
+        const distance = leapSize * factor;
+
+        return (img.getBoundingClientRect().top <= leapSize + distance &&
+               (img.getBoundingClientRect().bottom + distance) >= 0) && getComputedStyle(img).display !== "none"
     }
 
     function isFullyLoaded(img) {
