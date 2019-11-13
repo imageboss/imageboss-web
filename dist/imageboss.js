@@ -9,7 +9,7 @@
     propKey: 'imageboss',
     imgPropKey: 'imageboss-src',
     bgPropKey: 'imageboss-bg-src',
-    dprSupport: window.devicePixelRatio,
+    dprSupport: window.devicePixelRatio > 1,
     lazyLoadDistance: isDefined('lazyLoadDistance', 1.0),
     devMode: isDefined('devMode', false),
     dprEnabled: isDefined('dprEnabled', true),
@@ -122,6 +122,7 @@
       var operation = getAttribute(img, 'operation') || 'width';
       var coverMode = getAttribute(img, 'cover-mode');
       var lowRes = !!getAttribute(img, 'low-res');
+      var dprDisabled = getAttribute(img, 'dpr') === 'false';
       var width = getAttribute(img, 'width') || yieldValidSize(img.getAttribute('width')) || img.clientWidth;
       var height = getAttribute(img, 'height') || yieldValidSize(img.getAttribute('height')) || img.clientHeight;
       var options = (img.getAttribute("".concat(localOptions.propKey, "-options")) || '').split(',');
@@ -135,7 +136,7 @@
         options.push('format:webp');
       }
 
-      if (localOptions.dprEnabled && localOptions.dprSupport > 1) {
+      if (localOptions.dprSupport && localOptions.dprEnabled && !dprDisabled) {
         options.push('dpr:2');
       }
 
@@ -167,7 +168,7 @@
           options.push('quality:01');
           var lowResUrl = getUrl(src, {
             operation,
-            coverMode: coverMode,
+            coverMode,
             width: Math.round(width * 0.4),
             height: Math.round(height * 0.4),
             options: options.filter(opts => !opts.match(/dpr/)).filter(opts => opts).join(',')
