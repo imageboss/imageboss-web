@@ -98,10 +98,13 @@
     return img.setAttribute("".concat(localOptions.propKey, "-").concat(attr), val);
   }
 
-  function waitToBeLoaded(url, callback) {
+  function waitToBeLoaded(img, url, callback) {
     var image = new Image();
     image.src = url;
     image.addEventListener('load', callback);
+    image.addEventListener('error', () => {
+      setAttribute(img, 'loaded', true);
+    });
   }
 
   function yieldValidSize(size) {
@@ -132,6 +135,12 @@
         return setImage(img, src);
       }
 
+      if (width <= 1 && height <= 1) {
+        console.error('We couldn\'t to determine de dimensions of your image based on your markup. Make sure you set it using CSS (width:), width="" or imageboss-width="" attribute.', img, '. ');
+        setAttribute(img, 'loaded', true);
+        return setImage(img, src);
+      }
+
       if (localOptions.webpEnabled && localOptions.webpSupport) {
         options.push('format:webp');
       }
@@ -156,7 +165,7 @@
 
       if (!lowRes && isVisible(img)) {
         setImage(img, newUrl);
-        waitToBeLoaded(newUrl, function () {
+        waitToBeLoaded(img, newUrl, function () {
           setAttribute(img, 'loaded', true);
           setOpacity(img, 1.0);
         });
@@ -179,7 +188,7 @@
 
         if (isVisible(img) && !getAttribute(img, 'loading')) {
           setAttribute(img, 'loading', true);
-          waitToBeLoaded(newUrl, function () {
+          waitToBeLoaded(img, newUrl, function () {
             setAttribute(img, 'loaded', true);
             setImage(img, newUrl);
             setOpacity(img, 1.0);

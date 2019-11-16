@@ -20,7 +20,7 @@ Add this snippet right before the `</body>` tag (at the end of your document).
         webpEnabled: true,
     };
 </script>
-<script src="//cdn.jsdelivr.net/gh/imageboss/imageboss-web@1.0.21/dist/imageboss.min.js" type="text/javascript"></script>
+<script src="//cdn.jsdelivr.net/gh/imageboss/imageboss-web@1.0.22/dist/imageboss.min.js" type="text/javascript"></script>
 ```
 
 Replace your `<img />` tags from this (example):
