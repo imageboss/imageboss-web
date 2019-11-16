@@ -137,6 +137,12 @@
                     return setImage(img, src);
                 }
 
+                if (width <=1 && height <=1) {
+                    console.error('We couldn\'t to determine de dimensions of your image based on your markup. Make sure you set it using CSS (width:), width="" or imageboss-width="" attribute.', img, '. ');
+                    setAttribute(img, 'loaded', true);
+                    return setImage(img, src);
+                }
+
                 if (localOptions.webpEnabled && localOptions.webpSupport) {
                     options.push('format:webp');
                 }
