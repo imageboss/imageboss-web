@@ -6,9 +6,9 @@
   var serviceHost = 'img.imageboss.me';
   var serviceUrl = "https://".concat(serviceHost);
   var localOptions = {
-    propKey: 'imageboss',
-    imgPropKey: 'imageboss-src',
-    bgPropKey: 'imageboss-bg-src',
+    propKey: 'data-imageboss',
+    imgPropKey: 'data-imageboss-src',
+    bgPropKey: 'data-imageboss-bg-src',
     dprSupport: window.devicePixelRatio > 1,
     lazyLoadDistance: isDefined('lazyLoadDistance', 1.0),
     devMode: isDefined('devMode', false),
@@ -45,11 +45,11 @@
   }
 
   function isImg(element) {
-    return !!element.getAttribute("".concat(localOptions.propKey, "-src"));
+    return !!getAttribute(element, 'src');
   }
 
   function isBg(element) {
-    return !!element.getAttribute("".concat(localOptions.propKey, "-bg-src"));
+    return !!getAttribute(element, 'bg-src');
   }
 
   function buildSrc(src) {
