@@ -31,7 +31,7 @@ to
 ```html
 <img
     src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
-    imageboss-src="myimage.jpg"
+    data-imageboss-src="myimage.jpg"
     width="150"
 />
 ```
@@ -39,79 +39,79 @@ to
 * The transparent gif will help you validate your HTML and prevent the browser to load the default image “not found”.
 
 ## Usage
-## <img imageboss-src="" [attrs] />
+## <img data-imageboss-src="" [attrs] />
 You can use this library with the `<img />` tags.
-## <div imageboss-bg-src="" [attrs] />
-For background images use the property `imageboss-bg-src=""` instead. If you are defining your background on your CSS just remove the propery ´background-image´ from your CSS and use the html property `imageboss-bg-src=""` instead.
+## <div data-imageboss-bg-src="" [attrs] />
+For background images use the property `data-imageboss-bg-src=""` instead. If you are defining your background on your CSS just remove the propery ´background-image´ from your CSS and use the html property `data-imageboss-bg-src=""` instead.
 
 ## [attrs]
-### imageboss-low-res
+### data-imageboss-low-res
 When this option is enabled we will first deliver a blurred, low resolution version of your image while the high resolution one loads in background.
 ```html
 <img
-    imageboss-src="https://mysite.com/image.jpg"
-    imageboss-operation="cover"
-    imageboss-cover-mode="face"
-    imageboss-options="grayscale:true,blur:2"
-    imageboss-low-res="enabled"
+    data-imageboss-src="https://mysite.com/image.jpg"
+    data-imageboss-operation="cover"
+    data-imageboss-cover-mode="face"
+    data-imageboss-options="grayscale:true,blur:2"
+    data-imageboss-low-res="enabled"
 />
 ```
-### imageboss-operation
+### data-imageboss-operation
 It supports any of the operations available on: https://imageboss.me/docs
 ```html
 <img
-    imageboss-src="https://mysite.com/image.jpg"
-    imageboss-operation="width"
+    data-imageboss-src="https://mysite.com/image.jpg"
+    data-imageboss-operation="width"
 />
 ```
-### imageboss-width
+### data-imageboss-width
 It's not necessary but can be helpful when you are displaying images with relative size.
 In order to detect the right width of your image we:
 
-* First look at the `imageboss-width` attribute,
+* First look at the `data-imageboss-width` attribute,
 * Then, we look into the `width` HTML attribute.
 * Then, doesn't exist we look into the `img.clientWidth` size.
 
 ```html
 <img
-    imageboss-src="https://mysite.com/image.jpg"
-    imageboss-operation="width"
-    imageboss-width="500"
+    data-imageboss-src="https://mysite.com/image.jpg"
+    data-imageboss-operation="width"
+    data-imageboss-width="500"
 />
 ```
 
-### imageboss-height
+### data-imageboss-height
 It's not necessary but can be helpful when you are displaying images with relative size.
 In order to detect the right height of your image we:
 
-* First look at the `imageboss-height` attribute,
+* First look at the `data-imageboss-height` attribute,
 * Then, we look into the `height` HTML attribute.
 * Then, doesn't exist we look into the `img.clientHeight` size.
 
 ```html
 <img
-    imageboss-src="https://mysite.com/image.jpg"
-    imageboss-operation="cover"
-    imageboss-height="500"
+    data-imageboss-src="https://mysite.com/image.jpg"
+    data-imageboss-operation="cover"
+    data-imageboss-height="500"
 />
 ```
 
-### imageboss-cover-mode
+### data-imageboss-cover-mode
 For more options: https://imageboss.me/docs/operations/cover
 ```html
 <img
-    imageboss-src="https://mysite.com/image.jpg"
-    imageboss-operation="cover"
-    imageboss-cover-mode="face"
+    data-imageboss-src="https://mysite.com/image.jpg"
+    data-imageboss-operation="cover"
+    data-imageboss-cover-mode="face"
 />
 ```
-### imageboss-options
+### data-imageboss-options
 Options can be any of those available for the operation you are trying to achieve. More information at: https://imageboss.me/docs
 ```html
 <img
-    imageboss-src="https://mysite.com/image.jpg"
-    imageboss-operation="cover"
-    imageboss-cover-mode="face"
-    imageboss-options="grayscale:true,blur:2"
+    data-imageboss-src="https://mysite.com/image.jpg"
+    data-imageboss-operation="cover"
+    data-imageboss-cover-mode="face"
+    data-imageboss-options="grayscale:true,blur:2"
 />
 ```

@@ -4,9 +4,9 @@
     const serviceHost = 'img.imageboss.me';
     const serviceUrl = `https://${serviceHost}`;
     const localOptions = {
-        propKey: 'imageboss',
-        imgPropKey: 'imageboss-src',
-        bgPropKey: 'imageboss-bg-src',
+        propKey: 'data-imageboss',
+        imgPropKey: 'data-imageboss-src',
+        bgPropKey: 'data-imageboss-bg-src',
         dprSupport: window.devicePixelRatio > 1,
         lazyLoadDistance: isDefined('lazyLoadDistance', 1.0),
         devMode: isDefined('devMode', false),
@@ -21,7 +21,6 @@
     }
 
     function getUrl(src, { operation, coverMode, width, height, options }) {
-
         let template = '/:operation/:options/';
 
         if (operation === 'cover') {
@@ -45,11 +44,11 @@
     }
 
     function isImg(element) {
-        return !!element.getAttribute(`${localOptions.propKey}-src`);
+        return !!getAttribute(element, 'src');
     }
 
     function isBg(element) {
-        return !!element.getAttribute(`${localOptions.propKey}-bg-src`);
+        return !!getAttribute(element, 'bg-src');
     }
 
     function buildSrc(src) {
