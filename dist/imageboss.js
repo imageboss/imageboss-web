@@ -1,5 +1,11 @@
 "use strict";
 
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 /* Copyright © 2019 ImageBoss. All rights reserved. */
 (function () {
   var ImageBoss = window.ImageBoss;
@@ -111,91 +117,151 @@
     return size && !size.match(/%/) ? size : undefined;
   }
 
+  function parseImageOptions(img) {
+    return {
+      src: buildSrc(getAttribute(img, 'src') || getAttribute(img, 'bg-src')),
+      srcset: getAttribute(img, 'srcset'),
+      sizes: getAttribute(img, 'sizes'),
+      operation: getAttribute(img, 'operation') || 'width',
+      coverMode: getAttribute(img, 'cover-mode'),
+      lowRes: !!getAttribute(img, 'low-res'),
+      dprDisabled: getAttribute(img, 'dpr') === 'false',
+      width: getAttribute(img, 'width') || yieldValidSize(img.getAttribute('width')) || img.clientWidth,
+      height: getAttribute(img, 'height') || yieldValidSize(img.getAttribute('height')) || img.clientHeight,
+      options: parseOptions(getAttribute(img, 'options'))
+    };
+  }
+
+  function parseOptions(options) {
+    return (options || '').split(',').filter(opts => opts);
+  }
+
+  function handleSrcset(img) {
+    var {
+      srcset,
+      src,
+      sizes
+    } = parseImageOptions(img);
+
+    if (!localOptions.devMode && srcset) {
+      srcset = srcset.split(',').map(breakpoint => {
+        // ... 500w
+        var sizew = breakpoint.match(/ (\d+)w$/);
+
+        if (sizew) {
+          var options = parseOptions(getAttribute(img, 'options'));
+
+          if (localOptions.webpEnabled && localOptions.webpSupport) {
+            options.push('format:webp');
+          }
+
+          sizew = sizew[1];
+          var defaultParams = {
+            operation: 'width',
+            width: sizew,
+            options
+          };
+          var newUrl = getUrl(src, defaultParams);
+          return "".concat(newUrl, " ").concat(sizew, "w");
+        }
+      }).join(',');
+      img.setAttribute('srcset', srcset);
+      img.setAttribute('sizes', sizes);
+    }
+
+    return img;
+  }
+
+  function handleSrc(img) {
+    var {
+      src,
+      srcset,
+      operation,
+      coverMode,
+      lowRes,
+      dprDisabled,
+      width,
+      height,
+      options
+    } = parseImageOptions(img);
+
+    if (localOptions.devMode || srcset) {
+      setAttribute(img, 'loaded', true);
+      return setImage(img, src);
+    }
+
+    if (width <= 1 && height <= 1) {
+      console.error('We couldn\'t to determine de dimensions of your image based on your markup. \
+                Make sure you set it using CSS (width:), width="" or imageboss-width="" attribute.', img);
+      setAttribute(img, 'loaded', true);
+      return setImage(img, src);
+    }
+
+    if (localOptions.webpEnabled && localOptions.webpSupport) {
+      options.push('format:webp');
+    }
+
+    if (localOptions.dprSupport && localOptions.dprEnabled && !dprDisabled) {
+      options.push('dpr:2');
+    }
+
+    var defaultParams = {
+      operation,
+      coverMode,
+      width,
+      height,
+      options: options.filter(opts => !isBg(img) && !opts.match(/dpr/)).join(',')
+    };
+    var newUrl = getUrl(src, defaultParams);
+    setOpacity(img, 0.1);
+    img.style['transition'] = 'opacity 1.5s';
+
+    if (isBg(img)) {
+      img.style.backgroundSize = "100%";
+    }
+
+    if (!lowRes && isVisible(img)) {
+      setImage(img, newUrl);
+      waitToBeLoaded(img, newUrl, function () {
+        setAttribute(img, 'loaded', true);
+        setOpacity(img, 1.0);
+      });
+      return;
+    }
+
+    if (lowRes) {
+      if (!getAttribute(img, 'low-res-loaded')) {
+        options.push('quality:01');
+        var lowResUrl = getUrl(src, _objectSpread({
+          width: Math.round(width * 0.4),
+          height: Math.round(height * 0.4),
+          options: options.filter(opts => !opts.match(/dpr/)).filter(opts => opts).join(',')
+        }, defaultParams));
+        setImage(img, lowResUrl);
+        setAttribute(img, 'low-res-loaded', true);
+      }
+
+      if (isVisible(img) && !getAttribute(img, 'loading')) {
+        setAttribute(img, 'loading', true);
+        waitToBeLoaded(img, newUrl, function () {
+          setAttribute(img, 'loaded', true);
+          setImage(img, newUrl);
+          setOpacity(img, 1.0);
+        });
+      }
+    }
+  }
+
   function lookup(nodeList) {
     Array.from(nodeList).filter(img => {
       if (!img.getAttribute) {
         return false;
       }
 
-      var src = buildSrc(img.getAttribute(localOptions.imgPropKey) || img.getAttribute(localOptions.bgPropKey));
+      var src = buildSrc(getAttribute(img, 'src') || getAttribute(img, 'bg-src'));
       var matchPattern = RegExp(ImageBoss.authorisedHosts.join('|'));
       return src && !isFullyLoaded(img) && src.match(matchPattern);
-    }).forEach(img => {
-      var src = buildSrc(img.getAttribute(localOptions.imgPropKey) || img.getAttribute(localOptions.bgPropKey));
-      var operation = getAttribute(img, 'operation') || 'width';
-      var coverMode = getAttribute(img, 'cover-mode');
-      var lowRes = !!getAttribute(img, 'low-res');
-      var dprDisabled = getAttribute(img, 'dpr') === 'false';
-      var width = getAttribute(img, 'width') || yieldValidSize(img.getAttribute('width')) || img.clientWidth;
-      var height = getAttribute(img, 'height') || yieldValidSize(img.getAttribute('height')) || img.clientHeight;
-      var options = (img.getAttribute("".concat(localOptions.propKey, "-options")) || '').split(',');
-
-      if (localOptions.devMode) {
-        setAttribute(img, 'loaded', true);
-        return setImage(img, src);
-      }
-
-      if (width <= 1 && height <= 1) {
-        console.error('We couldn\'t to determine de dimensions of your image based on your markup. Make sure you set it using CSS (width:), width="" or imageboss-width="" attribute.', img, '. ');
-        setAttribute(img, 'loaded', true);
-        return setImage(img, src);
-      }
-
-      if (localOptions.webpEnabled && localOptions.webpSupport) {
-        options.push('format:webp');
-      }
-
-      if (localOptions.dprSupport && localOptions.dprEnabled && !dprDisabled) {
-        options.push('dpr:2');
-      }
-
-      var newUrl = getUrl(src, {
-        operation,
-        coverMode,
-        width,
-        height,
-        options: options.filter(opts => !isBg(img) && !opts.match(/dpr/) || opts).filter(opts => opts).join(',')
-      });
-      setOpacity(img, 0.1);
-      img.style['transition'] = 'opacity 1.5s';
-
-      if (isBg(img)) {
-        img.style.backgroundSize = "100%";
-      }
-
-      if (!lowRes && isVisible(img)) {
-        setImage(img, newUrl);
-        waitToBeLoaded(img, newUrl, function () {
-          setAttribute(img, 'loaded', true);
-          setOpacity(img, 1.0);
-        });
-        return;
-      }
-
-      if (lowRes) {
-        if (!getAttribute(img, 'low-res-loaded')) {
-          options.push('quality:01');
-          var lowResUrl = getUrl(src, {
-            operation,
-            coverMode,
-            width: Math.round(width * 0.4),
-            height: Math.round(height * 0.4),
-            options: options.filter(opts => !opts.match(/dpr/)).filter(opts => opts).join(',')
-          });
-          setImage(img, lowResUrl);
-          setAttribute(img, 'low-res-loaded', true);
-        }
-
-        if (isVisible(img) && !getAttribute(img, 'loading')) {
-          setAttribute(img, 'loading', true);
-          waitToBeLoaded(img, newUrl, function () {
-            setAttribute(img, 'loaded', true);
-            setImage(img, newUrl);
-            setOpacity(img, 1.0);
-          });
-        }
-      }
-    });
+    }).map(handleSrcset).forEach(handleSrc);
   }
 
   ;
