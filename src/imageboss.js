@@ -108,6 +108,140 @@
         return size && !size.match(/%/) ? size : undefined;
     }
 
+    function parseImageOptions(img) {
+        return {
+            src:          buildSrc(getAttribute(img, 'src') || getAttribute(img, 'bg-src')),
+            srcset:       getAttribute(img, 'srcset'),
+            sizes:        getAttribute(img, 'sizes'),
+            operation:    getAttribute(img, 'operation') || 'width',
+            coverMode:    getAttribute(img, 'cover-mode'),
+            lowRes:       !!getAttribute(img, 'low-res'),
+            dprDisabled:  getAttribute(img, 'dpr') === 'false',
+            width:        getAttribute(img, 'width') || yieldValidSize(img.getAttribute('width')) || img.clientWidth,
+            height:       getAttribute(img, 'height') || yieldValidSize(img.getAttribute('height')) || img.clientHeight,
+            options:      parseOptions(getAttribute(img, 'options')),
+        };
+    }
+    function parseOptions(options) {
+        return (options || '').split(',').filter(opts => opts);
+    }
+
+    function handleSrcset(img) {
+        let {srcset, src, sizes} = parseImageOptions(img);
+
+        if (!localOptions.devMode && srcset) {
+            srcset = srcset.split(',').map((breakpoint) => {
+                // ... 500w
+                let sizew = breakpoint.match(/ (\d+)w$/);
+
+                if (sizew) {
+                    const options = parseOptions(getAttribute(img, 'options'));
+
+                    if (localOptions.webpEnabled && localOptions.webpSupport) {
+                        options.push('format:webp');
+                    }
+
+                    sizew = sizew[1];
+                    const defaultParams = {
+                        operation: 'width',
+                        width: sizew,
+                        options,
+                    };
+
+                    const newUrl = getUrl(src, defaultParams);
+                    return `${newUrl} ${sizew}w`;
+                }
+            }).join(',');
+
+            img.setAttribute('srcset', srcset);
+            img.setAttribute('sizes', sizes);
+        }
+
+        return img;
+    }
+
+    function handleSrc(img) {
+        let { src, srcset, operation, coverMode, lowRes,
+              dprDisabled, width, height, options } = parseImageOptions(img);
+
+        if (localOptions.devMode || srcset) {
+            setAttribute(img, 'loaded', true);
+            return setImage(img, src);
+        }
+
+        if (width <=1 && height <=1) {
+            console.error(
+                'We couldn\'t to determine de dimensions of your image based on your markup. \
+                Make sure you set it using CSS (width:), width="" or imageboss-width="" attribute.',
+                img
+            );
+
+            setAttribute(img, 'loaded', true);
+            return setImage(img, src);
+        }
+
+        if (localOptions.webpEnabled && localOptions.webpSupport) {
+            options.push('format:webp');
+        }
+
+        if (localOptions.dprSupport && localOptions.dprEnabled && !dprDisabled) {
+            options.push('dpr:2');
+        }
+
+        const defaultParams = {
+            operation, coverMode,
+            width, height,
+            options: options
+                .filter(opts => !isBg(img) && !opts.match(/dpr/))
+                .join(','),
+        };
+
+        const newUrl = getUrl(src, defaultParams);
+
+        setOpacity(img, 0.1);
+        img.style['transition'] = 'opacity 1.5s';
+
+        if (isBg(img)) {
+            img.style.backgroundSize = `100%`;
+        }
+
+        if (!lowRes && isVisible(img)) {
+            setImage(img, newUrl);
+            waitToBeLoaded(img, newUrl, function() {
+                setAttribute(img, 'loaded', true);
+                setOpacity(img, 1.0);
+            });
+            return;
+        }
+
+        if (lowRes) {
+            if (!getAttribute(img, 'low-res-loaded')) {
+                options.push('quality:01');
+
+                const lowResUrl = getUrl(src, {
+                    width: Math.round(width * 0.4),
+                    height: Math.round(height * 0.4),
+                    options: options
+                    .filter(opts => !opts.match(/dpr/))
+                    .filter(opts => opts).join(','),
+                    ...defaultParams,
+                });
+
+                setImage(img, lowResUrl);
+                setAttribute(img, 'low-res-loaded', true);
+            }
+
+            if (isVisible(img) && !getAttribute(img, 'loading')) {
+                setAttribute(img, 'loading', true);
+                waitToBeLoaded(img, newUrl, function() {
+                    setAttribute(img, 'loaded', true);
+                    setImage(img, newUrl);
+                    setOpacity(img, 1.0);
+                })
+            }
+        }
+    }
+
     function lookup(nodeList) {
         Array
             .from(nodeList)
@@ -116,94 +250,13 @@
                     return false;
                 }
 
-                const src = buildSrc(img.getAttribute(localOptions.imgPropKey) || img.getAttribute(localOptions.bgPropKey));
+                const src = buildSrc(getAttribute(img, 'src') || getAttribute(img, 'bg-src'));
                 const matchPattern = RegExp(ImageBoss.authorisedHosts.join('|'));
 
                 return src && !isFullyLoaded(img) && src.match(matchPattern);
             })
-            .forEach(img => {
-                const src           = buildSrc(img.getAttribute(localOptions.imgPropKey) || img.getAttribute(localOptions.bgPropKey));
-                const operation     = getAttribute(img, 'operation') || 'width';
-                const coverMode     = getAttribute(img, 'cover-mode');
-                const lowRes        = !!getAttribute(img, 'low-res');
-                const dprDisabled   = getAttribute(img, 'dpr') === 'false';
-                const width         = getAttribute(img, 'width') || yieldValidSize(img.getAttribute('width')) || img.clientWidth;
-                const height        = getAttribute(img, 'height') || yieldValidSize(img.getAttribute('height')) || img.clientHeight;
-                const options       = (img.getAttribute(`${localOptions.propKey}-options`) || '').split(',');
-
-                if (localOptions.devMode) {
-                    setAttribute(img, 'loaded', true);
-                    return setImage(img, src);
-                }
-
-                if (width <=1 && height <=1) {
-                    console.error('We couldn\'t to determine de dimensions of your image based on your markup. Make sure you set it using CSS (width:), width="" or imageboss-width="" attribute.', img, '. ');
-                    setAttribute(img, 'loaded', true);
-                    return setImage(img, src);
-                }
-
-                if (localOptions.webpEnabled && localOptions.webpSupport) {
-                    options.push('format:webp');
-                }
-
-                if (localOptions.dprSupport && localOptions.dprEnabled && !dprDisabled) {
-                    options.push('dpr:2');
-                }
-
-                const newUrl = getUrl(src, {
-                    operation,
-                    coverMode,
-                    width,
-                    height,
-                    options: options
-                        .filter(opts => !isBg(img) && !opts.match(/dpr/) || opts)
-                        .filter(opts => opts).join(','),
-                });
-
-                setOpacity(img, 0.1);
-                img.style['transition'] = 'opacity 1.5s';
-
-                if (isBg(img)) {
-                    img.style.backgroundSize = `100%`;
-                }
-
-                if (!lowRes && isVisible(img)) {
-                    setImage(img, newUrl);
-                    waitToBeLoaded(img, newUrl, function() {
-                        setAttribute(img, 'loaded', true);
-                        setOpacity(img, 1.0);
-                    });
-                    return;
-                }
-
-                if (lowRes) {
-                    if (!getAttribute(img, 'low-res-loaded')) {
-                        options.push('quality:01');
-
-                        const lowResUrl = getUrl(src, {
-                            operation,
-                            coverMode,
-                            width: Math.round(width * 0.4),
-                            height: Math.round(height * 0.4),
-                            options: options
-                            .filter(opts => !opts.match(/dpr/))
-                            .filter(opts => opts).join(','),
-                        });
-
-                        setImage(img, lowResUrl);
-                        setAttribute(img, 'low-res-loaded', true);
-                    }
-
-                    if (isVisible(img) && !getAttribute(img, 'loading')) {
-                        setAttribute(img, 'loading', true);
-                        waitToBeLoaded(img, newUrl, function() {
-                            setAttribute(img, 'loaded', true);
-                            setImage(img, newUrl);
-                            setOpacity(img, 1.0);
-                        })
-                    }
-                }
-            });
+            .map(handleSrcset)
+            .forEach(handleSrc);
     };
 
     (function webpDetection(callback, enabled) {
