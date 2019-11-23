@@ -192,9 +192,7 @@
         const defaultParams = {
             operation, coverMode,
             width, height,
-            options: options
-                .filter(opts => !isBg(img) && !opts.match(/dpr/))
-                .join(','),
+            options: options.join(','),
         };
 
         const newUrl = getUrl(src, defaultParams);
@@ -223,8 +221,8 @@
                     width: Math.round(width * 0.4),
                     height: Math.round(height * 0.4),
                     options: options
-                    .filter(opts => !opts.match(/dpr/))
-                    .filter(opts => opts).join(','),
+                        .filter(opts => !opts.match(/dpr/))
+                        .join(','),
                     ...defaultParams,
                 });
 
