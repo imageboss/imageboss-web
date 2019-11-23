@@ -211,7 +211,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       coverMode,
       width,
       height,
-      options: options.filter(opts => !isBg(img) && !opts.match(/dpr/)).join(',')
+      options: options.join(',')
     };
     var newUrl = getUrl(src, defaultParams);
     setOpacity(img, 0.1);
@@ -236,7 +236,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         var lowResUrl = getUrl(src, _objectSpread({
           width: Math.round(width * 0.4),
           height: Math.round(height * 0.4),
-          options: options.filter(opts => !opts.match(/dpr/)).filter(opts => opts).join(',')
+          options: options.filter(opts => !opts.match(/dpr/)).join(',')
         }, defaultParams));
         setImage(img, lowResUrl);
         setAttribute(img, 'low-res-loaded', true);
