@@ -5,31 +5,46 @@
     <title>Background Images</title>
 
     <style type="text/css">
-        #hero-bg {
+        .hero-bg {
             width: 100%;
             height: 290px;
+        }
+
+        .hero-bg-with-bg-size {
+            width: 100%;
+            height: 290px;
+            background-size: cover;
         }
     </style>
 </head>
 
 <body>
     <div
-        id="hero-bg"
+        class="hero-bg"
         data-imageboss-bg-src="http://www.igorescobar.com/blog/wp-content/uploads/2014/08/golden-bg.jpeg"
     >
         Background With Text
     </div>
-    <div id="hero-bg"
+    <div class="hero-bg"
         data-imageboss-operation='cover'
         data-imageboss-cover-mode='center'
         data-imageboss-bg-src="http://www.igorescobar.com/blog/wp-content/uploads/2014/08/golden-bg.jpeg">
     </div>
-    <div id="hero-bg"
+    <div class="hero-bg"
         data-imageboss-operation='cover'
         data-imageboss-cover-mode='center'
         data-imageboss-low-res="enabled"
         data-imageboss-bg-src="http://www.igorescobar.com/blog/wp-content/uploads/2014/08/golden-bg.jpeg">
     </div>
+
+    <div class="hero-bg-with-bg-size"
+        data-imageboss-operation='cover'
+        data-imageboss-cover-mode='center'
+        data-imageboss-animation="false"
+        data-imageboss-bg-src="http://www.igorescobar.com/blog/wp-content/uploads/2014/08/golden-bg.jpeg">
+        No animation, no backgroundSize overwritten
+    </div>
+
 
     <!-- snippet -->
     <script type="text/javascript">

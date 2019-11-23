@@ -59,7 +59,7 @@
     }
 
     function setOpacity(element, opacity) {
-        if (localOptions.animationEnabled) {
+        if (localOptions.animationEnabled && getAttribute(element, 'animation') !== "false") {
             element.style.opacity = `${opacity}`;
         }
     }

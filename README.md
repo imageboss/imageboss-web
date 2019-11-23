@@ -115,3 +115,20 @@ Options can be any of those available for the operation you are trying to achiev
     data-imageboss-options="grayscale:true,blur:2"
 />
 ```
+
+### data-imageboss-dpr
+This is enabled by default for all elements. In case you don't want DPR for a specific image.
+```html
+<img
+    ...
+    data-imageboss-dpr="false"
+/>
+```
+### data-imageboss-animation
+This is enabled by default for all elements. In case you don't want to animate your element while loading.
+```html
+<img
+    ...
+    data-imageboss-animation="false"
+/>
+```
