@@ -67,7 +67,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   }
 
   function setOpacity(element, opacity) {
-    if (localOptions.animationEnabled) {
+    if (localOptions.animationEnabled && getAttribute(element, 'animation') !== "false") {
       element.style.opacity = "".concat(opacity);
     }
   }
@@ -215,9 +215,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     };
     var newUrl = getUrl(src, defaultParams);
     setOpacity(img, 0.1);
-    img.style['transition'] = 'opacity 1.5s';
+    img.style.transition = 'opacity 1.5s';
 
-    if (isBg(img)) {
+    if (isBg(img) && getComputedStyle(img).backgroundSize === "auto") {
       img.style.backgroundSize = "100%";
     }
 
