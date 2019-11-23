@@ -200,9 +200,9 @@
         const newUrl = getUrl(src, defaultParams);
 
         setOpacity(img, 0.1);
-        img.style['transition'] = 'opacity 1.5s';
+        img.style.transition = 'opacity 1.5s';
 
-        if (isBg(img)) {
+        if (isBg(img) && getComputedStyle(img).backgroundSize === "auto") {
             img.style.backgroundSize = `100%`;
         }
 
