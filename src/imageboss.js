@@ -111,7 +111,9 @@
     function resolveWidth(img) {
         let width = getAttribute(img, 'width') || yieldValidSize(img.getAttribute('width'));
 
-        if (!width && img.clientWidth > 1) {
+        if (width) {
+            return width;
+        } else if (img.clientWidth > 1) {
             return img.clientWidth;
         }
 
