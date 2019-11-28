@@ -140,7 +140,6 @@
 
     function handleSrcset(img) {
         let {srcset, src, sizes} = parseImageOptions(img);
-        let newSrc = src;
         if (!localOptions.devMode && srcset) {
             srcset = srcset.split(',').map((breakpoint) => {
                 // ... 500w
@@ -161,7 +160,6 @@
                     };
 
                     const newUrl = getUrl(src, defaultParams);
-                    newSrc = newUrl;
                     return `${newUrl} ${sizew}w`;
                 }
             }).join(',');
