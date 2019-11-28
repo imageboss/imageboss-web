@@ -108,6 +108,16 @@
         return size && !size.match(/%/) ? size : undefined;
     }
 
+    function resolveWidth(img) {
+        let width = getAttribute(img, 'width') || yieldValidSize(img.getAttribute('width'));
+
+        if (!width && img.clientWidth > 1) {
+            return img.clientWidth;
+        }
+
+        return img.parentNode.clientWidth;
+    }
+
     function parseImageOptions(img) {
         return {
             src:          buildSrc(getAttribute(img, 'src') || getAttribute(img, 'bg-src')),
@@ -117,7 +127,7 @@
             coverMode:    getAttribute(img, 'cover-mode'),
             lowRes:       !!getAttribute(img, 'low-res'),
             dprDisabled:  getAttribute(img, 'dpr') === 'false',
-            width:        getAttribute(img, 'width') || yieldValidSize(img.getAttribute('width')) || img.clientWidth,
+            width:        resolveWidth(img),
             height:       getAttribute(img, 'height') || yieldValidSize(img.getAttribute('height')) || img.clientHeight,
             options:      parseOptions(getAttribute(img, 'options')),
         };
