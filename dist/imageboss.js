@@ -154,7 +154,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       src,
       sizes
     } = parseImageOptions(img);
-    var newSrc = src;
 
     if (!localOptions.devMode && srcset) {
       srcset = srcset.split(',').map(breakpoint => {
@@ -175,7 +174,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
             options
           };
           var newUrl = getUrl(src, defaultParams);
-          newSrc = newUrl;
           return "".concat(newUrl, " ").concat(sizew, "w");
         }
       }).join(',');
