@@ -58,8 +58,11 @@
         return src;
     }
 
+    function isAnimated(element) {
+        return localOptions.animationEnabled && getAttribute(element, 'animation') !== "false"
+    }
     function setOpacity(element, opacity) {
-        if (localOptions.animationEnabled && getAttribute(element, 'animation') !== "false") {
+        if (isAnimated(element)) {
             element.style.opacity = `${opacity}`;
         }
     }
@@ -208,7 +211,10 @@
         const newUrl = getUrl(src, defaultParams);
 
         setOpacity(img, 0.1);
-        img.style.transition = 'opacity 1.5s';
+
+        if (isAnimated(img)) {
+            img.style.transition = 'opacity 1.5s';
+        }
 
         if (isBg(img) && getComputedStyle(img).backgroundSize === "auto") {
             img.style.backgroundSize = `100%`;
