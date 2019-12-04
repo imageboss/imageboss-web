@@ -66,8 +66,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     return src;
   }
 
+  function isAnimated(element) {
+    return localOptions.animationEnabled && getAttribute(element, 'animation') !== "false";
+  }
+
   function setOpacity(element, opacity) {
-    if (localOptions.animationEnabled && getAttribute(element, 'animation') !== "false") {
+    if (isAnimated(element)) {
       element.style.opacity = "".concat(opacity);
     }
   }
@@ -225,7 +229,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     };
     var newUrl = getUrl(src, defaultParams);
     setOpacity(img, 0.1);
-    img.style.transition = 'opacity 1.5s';
+
+    if (isAnimated(img)) {
+      img.style.transition = 'opacity 1.5s';
+    }
 
     if (isBg(img) && getComputedStyle(img).backgroundSize === "auto") {
       img.style.backgroundSize = "100%";
