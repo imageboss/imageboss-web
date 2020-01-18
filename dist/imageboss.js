@@ -250,11 +250,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     if (lowRes) {
       if (!getAttribute(img, 'low-res-loaded')) {
         options.push('quality:01');
-        var lowResUrl = getUrl(src, _objectSpread({
+        var lowResUrl = getUrl(src, _objectSpread({}, defaultParams, {
           width: Math.round(width * 0.4),
           height: Math.round(height * 0.4),
           options: options.filter(opts => !opts.match(/dpr/)).join(',')
-        }, defaultParams));
+        }));
         setImage(img, lowResUrl);
         setAttribute(img, 'low-res-loaded', true);
       }
