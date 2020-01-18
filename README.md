@@ -18,6 +18,10 @@ Add this snippet right before the `</body>` tag (at the end of your document).
         devMode: false,
         animationEnabled: true,
         webpEnabled: true,
+        lazyLoadDistance: 1.0,
+        dprEnabled: true,
+        webpEnabled: true,
+        animationEnabled: true
     };
 </script>
 <script src="//cdn.jsdelivr.net/gh/imageboss/imageboss-web@2.0.10/dist/imageboss.min.js" type="text/javascript"></script>
