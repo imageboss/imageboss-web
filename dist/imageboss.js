@@ -84,6 +84,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     }
   }
 
+  function setRealWidth(element, width) {
+    console.log(element.style.opacity);
+
+    if (isImg(element) && !element.style.width) {
+      element.style.width = "".concat(width, "px");
+    }
+  }
+
   function isVisible(img) {
     var leapSize = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
     var factor = localOptions.lazyLoadDistance;
@@ -255,6 +263,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           height: Math.round(height * 0.4),
           options: options.filter(opts => !opts.match(/dpr/)).join(',')
         }));
+        setRealWidth(img, width);
         setImage(img, lowResUrl);
         setAttribute(img, 'low-res-loaded', true);
       }
