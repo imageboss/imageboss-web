@@ -13,6 +13,7 @@
         dprEnabled: isDefined('dprEnabled', true),
         webpEnabled: isDefined('webpEnabled', true),
         animationEnabled: isDefined('animationEnabled', true),
+        lowResSize: isDefined('lowResSize', 0.4),
         isMobile: window.innerWidth <= 760,
     };
 
@@ -73,13 +74,6 @@
             element.setAttribute('src', url);
         } else if (isBg(element)) {
             element.style.backgroundImage = `url('${url}')`;
-        }
-    }
-
-    function setRealWidth(element, width) {
-        console.log(element.style.opacity)
-        if (isImg(element) && !element.style.width) {
-            element.style.width = `${width}px`;
         }
     }
 
@@ -242,14 +236,13 @@
                 options.push('quality:01');
                 const lowResUrl = getUrl(src, {
                     ...defaultParams,
-                    width: Math.round(width * 0.4),
-                    height: Math.round(height * 0.4),
+                    width: Math.round(width * localOptions.lowResSize),
+                    height: Math.round(height * localOptions.lowResSize),
                     options: options
                         .filter(opts => !opts.match(/dpr/))
                         .join(','),
                 });
 
-                setRealWidth(img, width);
                 setImage(img, lowResUrl);
                 setAttribute(img, 'low-res-loaded', true);
             }
