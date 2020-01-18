@@ -21,6 +21,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     dprEnabled: isDefined('dprEnabled', true),
     webpEnabled: isDefined('webpEnabled', true),
     animationEnabled: isDefined('animationEnabled', true),
+    lowResSize: isDefined('lowResSize', 0.4),
     isMobile: window.innerWidth <= 760
   };
 
@@ -81,14 +82,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       element.setAttribute('src', url);
     } else if (isBg(element)) {
       element.style.backgroundImage = "url('".concat(url, "')");
-    }
-  }
-
-  function setRealWidth(element, width) {
-    console.log(element.style.opacity);
-
-    if (isImg(element) && !element.style.width) {
-      element.style.width = "".concat(width, "px");
     }
   }
 
@@ -259,11 +252,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       if (!getAttribute(img, 'low-res-loaded')) {
         options.push('quality:01');
         var lowResUrl = getUrl(src, _objectSpread({}, defaultParams, {
-          width: Math.round(width * 0.4),
-          height: Math.round(height * 0.4),
+          width: Math.round(width * localOptions.lowResSize),
+          height: Math.round(height * localOptions.lowResSize),
           options: options.filter(opts => !opts.match(/dpr/)).join(',')
         }));
-        setRealWidth(img, width);
         setImage(img, lowResUrl);
         setAttribute(img, 'low-res-loaded', true);
       }
