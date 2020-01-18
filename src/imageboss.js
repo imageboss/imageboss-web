@@ -61,6 +61,7 @@
     function isAnimated(element) {
         return localOptions.animationEnabled && getAttribute(element, 'animation') !== "false"
     }
+
     function setOpacity(element, opacity) {
         if (isAnimated(element)) {
             element.style.opacity = `${opacity}`;
@@ -72,6 +73,13 @@
             element.setAttribute('src', url);
         } else if (isBg(element)) {
             element.style.backgroundImage = `url('${url}')`;
+        }
+    }
+
+    function setRealWidth(element, width) {
+        console.log(element.style.opacity)
+        if (isImg(element) && !element.style.width) {
+            element.style.width = `${width}px`;
         }
     }
 
@@ -241,6 +249,7 @@
                         .join(','),
                 });
 
+                setRealWidth(img, width);
                 setImage(img, lowResUrl);
                 setAttribute(img, 'low-res-loaded', true);
             }
