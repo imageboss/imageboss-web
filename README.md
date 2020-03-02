@@ -16,11 +16,11 @@ Add this snippet right before the `</body>` tag (at the end of your document).
         authorisedHosts: ['www.your-authorised-host.com'],
         // defaults
         devMode: false,
-        animation: true,
-        webp: true,
-        lazyload: true,
-        dpr: true,
-        webp: true
+        lowRes: false, // deliver a low-resolution of your image first.
+        animation: true, // fade effect when loading images
+        webp: true, // use webp when supported
+        lazyload: true, // lazyload your images
+        dpr: true // use dpr for your images when supported
     };
 </script>
 <script src="//cdn.jsdelivr.net/gh/imageboss/imageboss-web@3.0.1/dist/imageboss.min.js" type="text/javascript"></script>
@@ -49,7 +49,7 @@ For background images use the property `data-imageboss-bg-src=""` instead. If yo
 
 ## [attrs]
 ### data-imageboss-low-res
-When this option is enabled we will first deliver a blurred, low resolution version of your image while the high resolution one loads in background.
+When this option is enabled we will first deliver low resolution version of your image while the high resolution one loads in background.
 ```html
 <img
     data-imageboss-src="https://mysite.com/image.jpg"
