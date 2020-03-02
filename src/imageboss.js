@@ -26,8 +26,8 @@
 
     function isEnabled(el, option) {
         const attributeValue = getAttribute(el, option);
-        const isAttrDefined = attributeValue !== null;
-        return isAttrDefined ? attributeValue : isDefined(option, false, localOptions)
+        const isAttrDefined = [null, undefined].indexOf(attributeValue) == -1;
+        return isAttrDefined ? attributeValue === "true" && attributeValue !== true : isDefined(option, false, localOptions)
     }
 
     function getUrl(src, { operation, coverMode, width, height, options }) {
