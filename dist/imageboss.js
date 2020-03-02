@@ -18,9 +18,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     dprSupport: window.devicePixelRatio > 1,
     lazyLoadDistance: isDefined('lazyLoadDistance', 1.0),
     devMode: isDefined('devMode', false),
-    dprEnabled: isDefined('dprEnabled', true),
-    webpEnabled: isDefined('webpEnabled', true),
-    animationEnabled: isDefined('animationEnabled', true),
+    dpr: isDefined('dpr', true),
+    webp: isDefined('webp', true),
+    animation: isDefined('animation', true),
     lowResSize: isDefined('lowResSize', 0.4),
     isMobile: window.innerWidth <= 760
   };
@@ -68,7 +68,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   }
 
   function isAnimated(element) {
-    return localOptions.animationEnabled && getAttribute(element, 'animation') !== "false";
+    return localOptions.animation && getAttribute(element, 'animation') !== "false";
   }
 
   function setOpacity(element, opacity) {
@@ -168,7 +168,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         if (sizew) {
           var options = parseOptions(getAttribute(img, 'options'));
 
-          if (localOptions.webpEnabled && localOptions.webpSupport) {
+          if (localOptions.webp && localOptions.webpSupport) {
             options.push('format:webp');
           }
 
@@ -213,11 +213,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return setImage(img, src);
     }
 
-    if (localOptions.webpEnabled && localOptions.webpSupport) {
+    if (localOptions.webp && localOptions.webpSupport) {
       options.push('format:webp');
     }
 
-    if (localOptions.dprSupport && localOptions.dprEnabled && !dprDisabled) {
+    if (localOptions.dprSupport && localOptions.dpr && !dprDisabled) {
       options.push('dpr:2');
     }
 
@@ -329,5 +329,5 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     window.addEventListener("resize", defaultCallback);
     window.addEventListener("orientationchange", defaultCallback);
     document.addEventListener("scroll", defaultCallback);
-  }, localOptions.webpEnabled);
+  }, localOptions.webp);
 })(window);
