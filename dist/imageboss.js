@@ -16,17 +16,27 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     imgPropKey: 'data-imageboss-src',
     bgPropKey: 'data-imageboss-bg-src',
     dprSupport: window.devicePixelRatio > 1,
-    lazyLoadDistance: isDefined('lazyLoadDistance', 1.0),
+    lazyload: isDefined('lazyload', true),
+    lowRes: isDefined('lowRes', false),
+    lowResSize: isDefined('lowResSize', 0.4),
     devMode: isDefined('devMode', false),
     dpr: isDefined('dpr', true),
     webp: isDefined('webp', true),
     animation: isDefined('animation', true),
-    lowResSize: isDefined('lowResSize', 0.4),
     isMobile: window.innerWidth <= 760
   };
 
-  function isDefined(prop, fallback) {
-    return ImageBoss[prop] !== undefined ? ImageBoss[prop] : fallback;
+  function isDefined(prop) {
+    var fallback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+    var object = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : ImageBoss;
+    var normalizedProp = prop.replace(/(-)([a-z])/g, match => "".concat(match[1].toUpperCase()));
+    return [null, undefined].indexOf(object[normalizedProp]) == -1 ? object[normalizedProp] : fallback;
+  }
+
+  function isEnabled(el, option) {
+    var attributeValue = getAttribute(el, option);
+    var isAttrDefined = attributeValue !== null;
+    return isAttrDefined ? attributeValue : isDefined(option, false, localOptions);
   }
 
   function getUrl(src, _ref) {
@@ -67,12 +77,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     return src;
   }
 
-  function isAnimated(element) {
-    return localOptions.animation && getAttribute(element, 'animation') !== "false";
-  }
-
   function setOpacity(element, opacity) {
-    if (isAnimated(element)) {
+    if (isEnabled(element, 'animation')) {
       element.style.opacity = "".concat(opacity);
     }
   }
@@ -86,27 +92,23 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   }
 
   function isVisible(img) {
-    var leapSize = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-    var factor = localOptions.lazyLoadDistance;
-
-    if (localOptions.isMobile) {
-      factor += 0.5;
+    if (!isEnabled(img, 'lazyload')) {
+      return true;
     }
 
-    var distance = leapSize * factor;
-    return img.getBoundingClientRect().top <= leapSize + distance && img.getBoundingClientRect().bottom + distance >= 0 && getComputedStyle(img).display !== "none";
+    return getAttribute(img, 'visible');
   }
 
   function isFullyLoaded(img) {
     return img && getAttribute(img, 'loaded');
   }
 
-  function getAttribute(img, attr) {
-    return img.getAttribute("".concat(localOptions.propKey, "-").concat(attr));
+  function getAttribute(el, attr) {
+    return el.getAttribute("".concat(localOptions.propKey, "-").concat(attr));
   }
 
-  function setAttribute(img, attr, val) {
-    return img.setAttribute("".concat(localOptions.propKey, "-").concat(attr), val);
+  function setAttribute(el, attr, val) {
+    return el.setAttribute("".concat(localOptions.propKey, "-").concat(attr), val);
   }
 
   function waitToBeLoaded(img, url, callback) {
@@ -122,16 +124,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     return size && !size.match(/%/) ? size : undefined;
   }
 
-  function resolveWidth(img) {
-    var width = getAttribute(img, 'width') || yieldValidSize(img.getAttribute('width'));
+  function resolveSize(img, type) {
+    var size = getAttribute(img, type) || yieldValidSize(img.getAttribute(type));
+    var attr = "client".concat(type.charAt(0).toUpperCase() + type.slice(1));
 
-    if (width) {
-      return width;
-    } else if (img.clientWidth > 1) {
-      return img.clientWidth;
+    if (size) {
+      return size;
+    } else if (img[attr] > 1) {
+      return img[attr];
     }
 
-    return img.parentNode.clientWidth;
+    return img.parentNode[attr];
   }
 
   function parseImageOptions(img) {
@@ -141,11 +144,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       sizes: getAttribute(img, 'sizes'),
       operation: getAttribute(img, 'operation') || 'width',
       coverMode: getAttribute(img, 'cover-mode'),
-      lowRes: !!getAttribute(img, 'low-res'),
-      dprDisabled: getAttribute(img, 'dpr') === 'false',
-      width: resolveWidth(img),
-      height: getAttribute(img, 'height') || yieldValidSize(img.getAttribute('height')) || img.clientHeight,
-      options: parseOptions(getAttribute(img, 'options'))
+      width: resolveSize(img, 'width'),
+      height: resolveSize(img, 'height'),
+      options: parseOptions(getAttribute(img, 'options')),
+      lazyload: isEnabled(img, 'lazyload'),
+      lowRes: isEnabled(img, 'low-res'),
+      dprDisabled: isEnabled(img, 'dpr')
     };
   }
 
@@ -168,7 +172,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         if (sizew) {
           var options = parseOptions(getAttribute(img, 'options'));
 
-          if (localOptions.webp && localOptions.webpSupport) {
+          if (isEnabled(img, 'webp') && localOptions.webpSupport) {
             options.push('format:webp');
           }
 
@@ -195,7 +199,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       operation,
       coverMode,
       lowRes,
-      dprDisabled,
       width,
       height,
       options
@@ -217,7 +220,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       options.push('format:webp');
     }
 
-    if (localOptions.dprSupport && localOptions.dpr && !dprDisabled) {
+    if (localOptions.dprSupport && isEnabled(img, 'dpr')) {
       options.push('dpr:2');
     }
 
@@ -231,7 +234,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     var newUrl = getUrl(src, defaultParams);
     setOpacity(img, 0.1);
 
-    if (isAnimated(img)) {
+    if (isEnabled(img, 'animation')) {
       img.style.transition = 'opacity 1.5s';
     }
 
@@ -297,6 +300,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   })(function (webSupport) {
     localOptions.webpSupport = webSupport;
     var defaultSelector = "[".concat(localOptions.imgPropKey, "],[").concat(localOptions.bgPropKey, "]");
+    var elements = document.querySelectorAll(defaultSelector);
 
     function mutationLookup(target) {
       if (!target) {
@@ -305,7 +309,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       if (target.length) {
         Array.prototype.forEach.call(target, function (node) {
-          if (node.attributes && (node.attributes[localOptions.imgPropKey] || node.attributes[localOptions.bgPropKey]) && !getAttribute(node, 'loaded')) {
+          if (node.attributes && (node.attributes[localOptions.imgPropKey] || node.attributes[localOptions.bgPropKey]) && !isFullyLoaded(node)) {
             lookup([node]);
           }
 
@@ -316,18 +320,31 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       mutationLookup(target.childNodes);
     }
 
-    var defaultCallback = () => lookup(document.querySelectorAll(defaultSelector)); // call it if its already ready.
+    var defaultCallback = () => lookup(elements); // call it if its already ready.
 
 
     if (document.readyState !== 'loading') {
       defaultCallback();
+    }
+
+    if ("IntersectionObserver" in window) {
+      var lazyImageObserver = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            var el = entry.target;
+            setAttribute(el, 'visible', true);
+            mutationLookup([el]);
+            lazyImageObserver.unobserve(el);
+          }
+        });
+      });
+      [].slice.call(elements).forEach(function (lazyImage) {
+        lazyImageObserver.observe(lazyImage);
+      });
     } // in case the user do not add the script at the bottom
 
 
     window.addEventListener("DOMContentLoaded", defaultCallback);
     window.addEventListener("DOMNodeInserted", e => mutationLookup(e.target));
-    window.addEventListener("resize", defaultCallback);
-    window.addEventListener("orientationchange", defaultCallback);
-    document.addEventListener("scroll", defaultCallback);
   }, localOptions.webp);
 })(window);
