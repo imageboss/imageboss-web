@@ -23,7 +23,7 @@ Add this snippet right before the `</body>` tag (at the end of your document).
         webp: true
     };
 </script>
-<script src="//cdn.jsdelivr.net/gh/imageboss/imageboss-web@3.0.0/dist/imageboss.min.js" type="text/javascript"></script>
+<script src="//cdn.jsdelivr.net/gh/imageboss/imageboss-web@3.0.1/dist/imageboss.min.js" type="text/javascript"></script>
 ```
 
 Replace your `<img />` tags from this (example):

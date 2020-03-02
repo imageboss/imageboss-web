@@ -35,8 +35,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
   function isEnabled(el, option) {
     var attributeValue = getAttribute(el, option);
-    var isAttrDefined = attributeValue !== null;
-    return isAttrDefined ? attributeValue : isDefined(option, false, localOptions);
+    var isAttrDefined = [null, undefined].indexOf(attributeValue) == -1;
+    return isAttrDefined ? attributeValue === "true" && attributeValue !== true : isDefined(option, false, localOptions);
   }
 
   function getUrl(src, _ref) {
