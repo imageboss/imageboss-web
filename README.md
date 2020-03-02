@@ -19,7 +19,6 @@ Add this snippet right before the `</body>` tag (at the end of your document).
         animation: true,
         webp: true,
         lazyload: true,
-        lazyloadDistance: 1.0,
         dpr: true,
         webp: true
     };
