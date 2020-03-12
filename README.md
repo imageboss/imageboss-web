@@ -15,7 +15,7 @@ Add this snippet right before the `</body>` tag (at the end of your document).
     window.ImageBoss = {
         authorisedHosts: ['www.your-authorised-host.com'],
         // defaults
-        devMode: false,
+        devMode: false, // if currently your images are private set this to true to disable the library.
         lowRes: false, // deliver a low-resolution of your image first.
         animation: true, // fade effect when loading images
         webp: true, // use webp when supported

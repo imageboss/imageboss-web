@@ -62,9 +62,16 @@
     }
 
     function buildSrc(src) {
-        if (src && !src.match(/^https?:\/\//)) {
+        // /path/myimage.jpg
+        if (src && !src.match(/^https?:\/\//) && !src.match(/^\/\//)) {
             src = `${window.location.origin}/${src.replace(/^\//,'')}`;
         }
+
+        // //www.website.com/path/myimage.jpg
+        if (src.match(/^\/\//)) {
+            src = window.location.protocol + src;
+        }
+
         return src;
     }
 
