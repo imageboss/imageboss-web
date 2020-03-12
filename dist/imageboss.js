@@ -70,8 +70,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   }
 
   function buildSrc(src) {
-    if (src && !src.match(/^https?:\/\//)) {
+    // /path/myimage.jpg
+    if (src && !src.match(/^https?:\/\//) && !src.match(/^\/\//)) {
       src = "".concat(window.location.origin, "/").concat(src.replace(/^\//, ''));
+    } // //www.website.com/path/myimage.jpg
+
+
+    if (src.match(/^\/\//)) {
+      src = window.location.protocol + src;
     }
 
     return src;
