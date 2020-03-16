@@ -209,15 +209,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       height,
       options
     } = parseImageOptions(img);
+    var wrongDimentions = operation === 'width' ? width <= 1 : width <= 1 && height <= 1;
 
-    if (localOptions.devMode) {
-      setAttribute(img, 'loaded', true);
-      return setImage(img, src);
+    if (wrongDimentions) {
+      console.error('We couldn\'t to determine de dimensions of your image based on your markup. \
+                Make sure you set it using CSS (width:), width="" or imageboss-width="" attribute.', img, operation, width, height);
     }
 
-    if (width <= 1 && height <= 1) {
-      console.error('We couldn\'t to determine de dimensions of your image based on your markup. \
-                Make sure you set it using CSS (width:), width="" or imageboss-width="" attribute.', img);
+    if (wrongDimentions || localOptions.devMode) {
       setAttribute(img, 'loaded', true);
       return setImage(img, src);
     }
