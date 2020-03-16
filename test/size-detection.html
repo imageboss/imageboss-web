@@ -22,6 +22,10 @@
         .my-div img {
             width: 100%;
         }
+
+        .floating-link {
+            float: right;
+        }
     </style>
 </head>
 
@@ -79,9 +83,18 @@
             data-imageboss-operation="width"
             data-imageboss-options="grayscale:true"
             data-imageboss-low-res="enabled"
-            data-imageboss-width="500"
         />
     </div>
+
+    No width detected & parentNode (error)
+    <a href="#" class="floating-link">
+    <img
+        src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+        data-imageboss-src="http://www.igorescobar.com/blog/wp-content/uploads/2014/08/golden-bg.jpeg"
+        data-imageboss-operation="width"
+        data-imageboss-low-res="enabled"
+    />
+    </a>
 
     <!-- snippet -->
     <script type="text/javascript">

@@ -191,18 +191,17 @@
         let { src, operation, coverMode, lowRes,
               width, height, options } = parseImageOptions(img);
 
-        if (localOptions.devMode) {
-            setAttribute(img, 'loaded', true);
-            return setImage(img, src);
-        }
+        const wrongDimentions = operation === 'width' ? width <= 1 : width <= 1 && height <= 1;
 
-        if (width <= 1 && height <= 1) {
+        if (wrongDimentions) {
             console.error(
                 'We couldn\'t to determine de dimensions of your image based on your markup. \
                 Make sure you set it using CSS (width:), width="" or imageboss-width="" attribute.',
-                img
+                img, operation, width, height
             );
+        }
 
+        if (wrongDimentions || localOptions.devMode) {
             setAttribute(img, 'loaded', true);
             return setImage(img, src);
         }
