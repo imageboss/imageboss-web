@@ -1,11 +1,12 @@
 /* Copyright © 2019 ImageBoss. All rights reserved. */
 (function (){
     const ImageBoss = window.ImageBoss;
-    const serviceHost = 'img.imageboss.me';
+    const serviceHost = 'img-stg.imageboss.me';
     const serviceUrl = `https://${serviceHost}`;
     const localOptions = {
         propKey: 'data-imageboss',
         imgPropKey: 'data-imageboss-src',
+        source: isDefined('source'),
         bgPropKey: 'data-imageboss-bg-src',
         dprSupport: window.devicePixelRatio > 1,
         lazyload: isDefined('lazyload', true),
@@ -18,7 +19,7 @@
         isMobile: window.innerWidth <= 760,
     };
 
-    function isDefined(prop, fallback = false, object = ImageBoss) {
+    function isDefined(prop, fallback, object = ImageBoss) {
         const normalizedProp = prop
             .replace(/(-)([a-z])/g, (match) => `${match[1].toUpperCase()}`);
         return [null, undefined].indexOf(object[normalizedProp]) == -1 ? object[normalizedProp] : fallback;
@@ -31,17 +32,18 @@
     }
 
     function getUrl(src, { operation, coverMode, width, height, options }) {
-        let template = '/:operation/:options/';
+        let template = '/:source/:operation/:options';
 
         if (operation === 'cover') {
-            template = '/:operation::cover_mode/:widthx:height/:options/';
+            template = '/:source/:operation::cover_mode/:widthx:height/:options';
         } else if (operation === 'width') {
-            template = '/:operation/:width/:options/';
+            template = '/:source/:operation/:width/:options';
         } else if (operation === 'height') {
-            template = '/:operation/:height/:options/';
+            template = '/:source/:operation/:height/:options';
         }
 
         const finalUrl = template
+            .replace(':source', localOptions.source)
             .replace(':operation', operation || '')
             .replace(':cover_mode', coverMode || '')
             .replace(':width', width || '')
@@ -50,7 +52,7 @@
             .replace(/\/\//g, '/')
             .replace(/:\//g, '/')
 
-        return serviceUrl + finalUrl + src;
+        return serviceUrl + finalUrl + src.pathname;
     }
 
     function isImg(element) {
@@ -62,17 +64,19 @@
     }
 
     function buildSrc(src) {
-        // /path/myimage.jpg
-        if (src && !src.match(/^https?:\/\//) && !src.match(/^\/\//)) {
-            src = `${window.location.origin}/${src.replace(/^\//,'')}`;
-        }
+        const parser = document.createElement('a');
+        parser.href = src;
+        // // // /path/myimage.jpg
+        // // if (src && !src.match(/^https?:\/\//) && !src.match(/^\/\//)) {
+        // //     src = `/${src.replace(/^\//,'')}`;
+        // // }
 
-        // //www.website.com/path/myimage.jpg
-        if (src.match(/^\/\//)) {
-            src = window.location.protocol + src;
-        }
+        // // //www.website.com/path/myimage.jpg
+        // if (src.match(/^\/\//)) {
+        //     src = window.location.protocol + src;
+        // }
 
-        return src;
+        return parser;
     }
 
     function setOpacity(element, opacity) {
@@ -93,7 +97,6 @@
         if (!isEnabled(img, 'lazyload')) {
             return true;
         }
-
 
         return getAttribute(img, 'visible');
     }
@@ -193,15 +196,19 @@
 
         const wrongDimentions = operation === 'width' ? width <= 1 : width <= 1 && height <= 1;
 
+        if (!localOptions.source) {
+            console.log('ImageBossError: You need to inform an image source!')
+        }
+
         if (wrongDimentions) {
             console.error(
-                'We couldn\'t to determine de dimensions of your image based on your markup. \
+                'ImageBossError: We couldn\'t to determine de dimensions of your image based on your markup. \
                 Make sure you set it using CSS (width:), width="" or imageboss-width="" attribute.',
                 img, operation, width, height
             );
         }
 
-        if (wrongDimentions || localOptions.devMode) {
+        if (!localOptions.source || wrongDimentions || localOptions.devMode) {
             setAttribute(img, 'loaded', true);
             return setImage(img, src);
         }
@@ -277,9 +284,13 @@
                 }
 
                 const src = buildSrc(getAttribute(img, 'src') || getAttribute(img, 'bg-src'));
-                const matchPattern = RegExp(ImageBoss.authorisedHosts.join('|'));
+                const matchPattern = RegExp((ImageBoss.matchHosts || []).join('|'));
 
-                return src && !isFullyLoaded(img) && src.match(matchPattern);
+                if (ImageBoss.matchHosts && src && !src.hostname.match(matchPattern)) {
+                    return false;
+                }
+
+                return src && !isFullyLoaded(img);
             })
             .map(handleSrcset)
             .forEach(handleSrc);

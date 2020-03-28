@@ -286,7 +286,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }
 
       var src = buildSrc(getAttribute(img, 'src') || getAttribute(img, 'bg-src'));
-      var matchPattern = RegExp(ImageBoss.authorisedHosts.join('|'));
+      var matchPattern = RegExp(ImageBoss.matchHosts.join('|'));
       return src && !isFullyLoaded(img) && src.match(matchPattern);
     }).map(handleSrcset).forEach(handleSrc);
   }
