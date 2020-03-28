@@ -6,6 +6,7 @@
     const localOptions = {
         propKey: 'data-imageboss',
         imgPropKey: 'data-imageboss-src',
+        matchHosts: isDefined('matchHosts', []),
         source: isDefined('source'),
         bgPropKey: 'data-imageboss-bg-src',
         dprSupport: window.devicePixelRatio > 1,
@@ -284,9 +285,9 @@
                 }
 
                 const src = buildSrc(getAttribute(img, 'src') || getAttribute(img, 'bg-src'));
-                const matchPattern = RegExp((ImageBoss.matchHosts || []).join('|'));
+                const matchPattern = RegExp(localOptions.matchHosts.join('|'));
 
-                if (ImageBoss.matchHosts && src && !src.hostname.match(matchPattern)) {
+                if (localOptions.matchHosts.length && src && !src.hostname.match(matchPattern)) {
                     return false;
                 }
 
