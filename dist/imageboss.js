@@ -14,6 +14,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   var localOptions = {
     propKey: 'data-imageboss',
     imgPropKey: 'data-imageboss-src',
+    matchHosts: isDefined('matchHosts', []),
     source: isDefined('source'),
     bgPropKey: 'data-imageboss-bg-src',
     dprSupport: window.devicePixelRatio > 1,
@@ -290,9 +291,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }
 
       var src = buildSrc(getAttribute(img, 'src') || getAttribute(img, 'bg-src'));
-      var matchPattern = RegExp((ImageBoss.matchHosts || []).join('|'));
+      var matchPattern = RegExp(localOptions.matchHosts.join('|'));
 
-      if (ImageBoss.matchHosts && src && !src.hostname.match(matchPattern)) {
+      if (localOptions.matchHosts.length && src && !src.hostname.match(matchPattern)) {
         return false;
       }
 
