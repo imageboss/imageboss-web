@@ -9,11 +9,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 /* Copyright © 2019 ImageBoss. All rights reserved. */
 (function () {
   var ImageBoss = window.ImageBoss;
-  var serviceHost = 'img.imageboss.me';
+  var serviceHost = 'img-stg.imageboss.me';
   var serviceUrl = "https://".concat(serviceHost);
   var localOptions = {
     propKey: 'data-imageboss',
     imgPropKey: 'data-imageboss-src',
+    source: isDefined('source'),
     bgPropKey: 'data-imageboss-bg-src',
     dprSupport: window.devicePixelRatio > 1,
     lazyload: isDefined('lazyload', true),
@@ -26,8 +27,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     isMobile: window.innerWidth <= 760
   };
 
-  function isDefined(prop) {
-    var fallback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+  function isDefined(prop, fallback) {
     var object = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : ImageBoss;
     var normalizedProp = prop.replace(/(-)([a-z])/g, match => "".concat(match[1].toUpperCase()));
     return [null, undefined].indexOf(object[normalizedProp]) == -1 ? object[normalizedProp] : fallback;
@@ -47,18 +47,18 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       height,
       options
     } = _ref;
-    var template = '/:operation/:options/';
+    var template = '/:source/:operation/:options';
 
     if (operation === 'cover') {
-      template = '/:operation::cover_mode/:widthx:height/:options/';
+      template = '/:source/:operation::cover_mode/:widthx:height/:options';
     } else if (operation === 'width') {
-      template = '/:operation/:width/:options/';
+      template = '/:source/:operation/:width/:options';
     } else if (operation === 'height') {
-      template = '/:operation/:height/:options/';
+      template = '/:source/:operation/:height/:options';
     }
 
-    var finalUrl = template.replace(':operation', operation || '').replace(':cover_mode', coverMode || '').replace(':width', width || '').replace(':height', height || '').replace(':options', options || '').replace(/\/\//g, '/').replace(/:\//g, '/');
-    return serviceUrl + finalUrl + src;
+    var finalUrl = template.replace(':source', localOptions.source).replace(':operation', operation || '').replace(':cover_mode', coverMode || '').replace(':width', width || '').replace(':height', height || '').replace(':options', options || '').replace(/\/\//g, '/').replace(/:\//g, '/');
+    return serviceUrl + finalUrl + src.pathname;
   }
 
   function isImg(element) {
@@ -70,17 +70,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   }
 
   function buildSrc(src) {
-    // /path/myimage.jpg
-    if (src && !src.match(/^https?:\/\//) && !src.match(/^\/\//)) {
-      src = "".concat(window.location.origin, "/").concat(src.replace(/^\//, ''));
-    } // //www.website.com/path/myimage.jpg
+    var parser = document.createElement('a');
+    parser.href = src; // // // /path/myimage.jpg
+    // // if (src && !src.match(/^https?:\/\//) && !src.match(/^\/\//)) {
+    // //     src = `/${src.replace(/^\//,'')}`;
+    // // }
+    // // //www.website.com/path/myimage.jpg
+    // if (src.match(/^\/\//)) {
+    //     src = window.location.protocol + src;
+    // }
 
-
-    if (src.match(/^\/\//)) {
-      src = window.location.protocol + src;
-    }
-
-    return src;
+    return parser;
   }
 
   function setOpacity(element, opacity) {
@@ -211,12 +211,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     } = parseImageOptions(img);
     var wrongDimentions = operation === 'width' ? width <= 1 : width <= 1 && height <= 1;
 
+    if (!localOptions.source) {
+      console.log('ImageBossError: You need to inform an image source!');
+    }
+
     if (wrongDimentions) {
-      console.error('We couldn\'t to determine de dimensions of your image based on your markup. \
+      console.error('ImageBossError: We couldn\'t to determine de dimensions of your image based on your markup. \
                 Make sure you set it using CSS (width:), width="" or imageboss-width="" attribute.', img, operation, width, height);
     }
 
-    if (wrongDimentions || localOptions.devMode) {
+    if (!localOptions.source || wrongDimentions || localOptions.devMode) {
       setAttribute(img, 'loaded', true);
       return setImage(img, src);
     }
@@ -286,8 +290,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }
 
       var src = buildSrc(getAttribute(img, 'src') || getAttribute(img, 'bg-src'));
-      var matchPattern = RegExp(ImageBoss.matchHosts.join('|'));
-      return src && !isFullyLoaded(img) && src.match(matchPattern);
+      var matchPattern = RegExp((ImageBoss.matchHosts || []).join('|'));
+
+      if (ImageBoss.matchHosts && src && !src.hostname.match(matchPattern)) {
+        return false;
+      }
+
+      return src && !isFullyLoaded(img);
     }).map(handleSrcset).forEach(handleSrc);
   }
 
