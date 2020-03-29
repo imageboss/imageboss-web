@@ -1,7 +1,7 @@
 /* Copyright © 2019 ImageBoss. All rights reserved. */
 (function (){
     const ImageBoss = window.ImageBoss;
-    const serviceHost = 'img-stg.imageboss.me';
+    const serviceHost = 'img.imageboss.me';
     const serviceUrl = `https://${serviceHost}`;
     const localOptions = {
         propKey: 'data-imageboss',
