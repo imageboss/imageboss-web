@@ -67,16 +67,6 @@
     function buildSrc(src) {
         const parser = document.createElement('a');
         parser.href = src;
-        // // // /path/myimage.jpg
-        // // if (src && !src.match(/^https?:\/\//) && !src.match(/^\/\//)) {
-        // //     src = `/${src.replace(/^\//,'')}`;
-        // // }
-
-        // // //www.website.com/path/myimage.jpg
-        // if (src.match(/^\/\//)) {
-        //     src = window.location.protocol + src;
-        // }
-
         return parser;
     }
 
