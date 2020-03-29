@@ -56,7 +56,7 @@ When this option is enabled we will first deliver low resolution version of your
     data-imageboss-operation="cover"
     data-imageboss-cover-mode="face"
     data-imageboss-options="grayscale:true,blur:2"
-    data-imageboss-low-res="enabled"
+    data-imageboss-low-res="true"
 />
 ```
 ### data-imageboss-operation
