@@ -350,12 +350,12 @@
         window.addEventListener("DOMContentLoaded", defaultCallback);
         window.addEventListener("DOMNodeInserted", function (observer, e) {
             mutationLookup(e.target);
-            const query = e.target.querySelectorAll;
-            if (query) {
+            try {
+                const query = e.target.querySelectorAll;
                 [].slice.call(query(defaultSelector)).forEach(function (lazyImage) {
                     observer.observe(lazyImage);
                 })
-            }
+            } catch (e) {}
         }.bind(null, lazyImageObserver));
     }, localOptions.webp);
 })(window);
