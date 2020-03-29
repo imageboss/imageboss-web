@@ -205,7 +205,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     var wrongDimentions = operation === 'width' ? width <= 1 : width <= 1 && height <= 1;
 
     if (!localOptions.source) {
-      console.log('ImageBossError: You need to inform an image source!');
+      console.error('ImageBossError: You need to inform an image source!');
     }
 
     if (wrongDimentions) {
