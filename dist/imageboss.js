@@ -9,7 +9,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 /* Copyright © 2019 ImageBoss. All rights reserved. */
 (function () {
   var ImageBoss = window.ImageBoss;
-  var serviceHost = 'img-stg.imageboss.me';
+  var serviceHost = 'img.imageboss.me';
   var serviceUrl = "https://".concat(serviceHost);
   var localOptions = {
     propKey: 'data-imageboss',
