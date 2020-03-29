@@ -210,7 +210,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
     if (wrongDimentions) {
       console.error('ImageBossError: We couldn\'t to determine de dimensions of your image based on your markup. \
-                Make sure you set it using CSS (width:), width="" or imageboss-width="" attribute.', img, operation, width, height);
+              Make sure you set it using CSS (width:), width="" or imageboss-width="" attribute.', img, operation, width, height);
     }
 
     if (!localOptions.source || wrongDimentions || localOptions.devMode) {
@@ -327,15 +327,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       mutationLookup(target.childNodes);
     }
 
-    var defaultCallback = () => lookup(elements); // call it if its already ready.
+    var defaultCallback = () => lookup(elements);
 
+    var lazyImageObserver; // call it if its already ready.
 
     if (document.readyState !== 'loading') {
       defaultCallback();
     }
 
     if ("IntersectionObserver" in window) {
-      var lazyImageObserver = new IntersectionObserver(function (entries) {
+      lazyImageObserver = new IntersectionObserver(function (entries) {
         entries.forEach(function (entry) {
           if (entry.isIntersecting) {
             var el = entry.target;
@@ -352,6 +353,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
     window.addEventListener("DOMContentLoaded", defaultCallback);
-    window.addEventListener("DOMNodeInserted", e => mutationLookup(e.target));
+    window.addEventListener("DOMNodeInserted", function (observer, e) {
+      mutationLookup(e.target);
+      var query = e.target.querySelectorAll;
+
+      if (query) {
+        [].slice.call(query(defaultSelector)).forEach(function (lazyImage) {
+          observer.observe(lazyImage);
+        });
+      }
+    }.bind(null, lazyImageObserver));
   }, localOptions.webp);
 })(window);
