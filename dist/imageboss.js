@@ -355,13 +355,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     window.addEventListener("DOMContentLoaded", defaultCallback);
     window.addEventListener("DOMNodeInserted", function (observer, e) {
       mutationLookup(e.target);
-      var query = e.target.querySelectorAll;
 
-      if (query) {
+      try {
+        var query = e.target.querySelectorAll;
         [].slice.call(query(defaultSelector)).forEach(function (lazyImage) {
           observer.observe(lazyImage);
         });
-      }
+      } catch (e) {}
     }.bind(null, lazyImageObserver));
   }, localOptions.webp);
 })(window);
