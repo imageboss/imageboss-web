@@ -72,15 +72,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
   function buildSrc(src) {
     var parser = document.createElement('a');
-    parser.href = src; // // // /path/myimage.jpg
-    // // if (src && !src.match(/^https?:\/\//) && !src.match(/^\/\//)) {
-    // //     src = `/${src.replace(/^\//,'')}`;
-    // // }
-    // // //www.website.com/path/myimage.jpg
-    // if (src.match(/^\/\//)) {
-    //     src = window.location.protocol + src;
-    // }
-
+    parser.href = src;
     return parser;
   }
 
