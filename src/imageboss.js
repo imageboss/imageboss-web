@@ -276,7 +276,7 @@
                 const src = buildSrc(getAttribute(img, 'src') || getAttribute(img, 'bg-src'));
                 const matchPattern = RegExp(localOptions.matchHosts.join('|'));
 
-                if (localOptions.matchHosts.length && src && !src.hostname.match(matchPattern)) {
+                if (localOptions.matchHosts.length && src && !src.href.match(matchPattern)) {
                     return false;
                 }
 
