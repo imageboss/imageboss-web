@@ -16,8 +16,7 @@
         devMode: isDefined('devMode', false),
         dpr: isDefined('dpr', true),
         webp: isDefined('webp', true),
-        animation: isDefined('animation', true),
-        isMobile: window.innerWidth <= 760,
+        animation: isDefined('animation', false)
     };
 
     function isDefined(prop, fallback, object = ImageBoss) {

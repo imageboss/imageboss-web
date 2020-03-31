@@ -16,8 +16,8 @@ Add this snippet right before the `</body>` tag (at the end of your document).
         source: 'mywebsite-images',
         // defaults
         devMode: false, // if currently your images are private set this to true to disable the library.
+        animation: false, // fade effect when loading images
         lowRes: false, // deliver a low-resolution of your image first.
-        animation: true, // fade effect when loading images
         webp: true, // use webp when supported
         lazyload: true, // lazyload your images
         dpr: true // use dpr for your images when supported
