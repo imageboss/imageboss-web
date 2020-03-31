@@ -24,8 +24,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     devMode: isDefined('devMode', false),
     dpr: isDefined('dpr', true),
     webp: isDefined('webp', true),
-    animation: isDefined('animation', true),
-    isMobile: window.innerWidth <= 760
+    animation: isDefined('animation', false)
   };
 
   function isDefined(prop, fallback) {
@@ -255,7 +254,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
     if (lowRes) {
       if (!getAttribute(img, 'low-res-loaded')) {
-        options.push('quality:01');
+        options.push('quality:07');
         var lowResUrl = getUrl(src, _objectSpread({}, defaultParams, {
           width: Math.round(width * localOptions.lowResSize),
           height: Math.round(height * localOptions.lowResSize),
@@ -285,7 +284,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var src = buildSrc(getAttribute(img, 'src') || getAttribute(img, 'bg-src'));
       var matchPattern = RegExp(localOptions.matchHosts.join('|'));
 
-      if (localOptions.matchHosts.length && src && !src.hostname.match(matchPattern)) {
+      if (localOptions.matchHosts.length && src && !src.href.match(matchPattern)) {
         return false;
       }
 
