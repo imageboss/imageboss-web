@@ -240,7 +240,7 @@
 
         if (lowRes) {
             if (!getAttribute(img, 'low-res-loaded')) {
-                options.push('quality:01');
+                options.push('quality:07');
                 const lowResUrl = getUrl(src, {
                     ...defaultParams,
                     width: Math.round(width * localOptions.lowResSize),
