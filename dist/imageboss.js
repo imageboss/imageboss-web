@@ -236,7 +236,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     setOpacity(img, 0.1);
 
     if (isEnabled(img, 'animation')) {
-      img.style.transition = 'opacity 1.5s';
+      img.style.transition = 'opacity 0.5s';
     }
 
     if (isBg(img) && getComputedStyle(img).backgroundSize === "auto") {
