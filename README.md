@@ -52,7 +52,7 @@ For background images use the property `data-imageboss-bg-src=""` instead. If yo
 When this option is enabled we will first deliver low resolution version of your image while the high resolution one loads in background.
 ```html
 <img
-    data-imageboss-src="https://mysite.com/image.jpg"
+    data-imageboss-src="/image.jpg"
     data-imageboss-operation="cover"
     data-imageboss-cover-mode="face"
     data-imageboss-options="grayscale:true,blur:2"
@@ -63,7 +63,7 @@ When this option is enabled we will first deliver low resolution version of your
 It supports any of the operations available on: https://imageboss.me/docs
 ```html
 <img
-    data-imageboss-src="https://mysite.com/image.jpg"
+    data-imageboss-src="/image.jpg"
     data-imageboss-operation="width"
 />
 ```
@@ -77,7 +77,7 @@ In order to detect the right width of your image we:
 
 ```html
 <img
-    data-imageboss-src="https://mysite.com/image.jpg"
+    data-imageboss-src="/image.jpg"
     data-imageboss-operation="width"
     data-imageboss-width="500"
 />
@@ -93,7 +93,7 @@ In order to detect the right height of your image we:
 
 ```html
 <img
-    data-imageboss-src="https://mysite.com/image.jpg"
+    data-imageboss-src="/image.jpg"
     data-imageboss-operation="cover"
     data-imageboss-height="500"
 />
@@ -103,7 +103,7 @@ In order to detect the right height of your image we:
 For more options: https://imageboss.me/docs/operations/cover
 ```html
 <img
-    data-imageboss-src="https://mysite.com/image.jpg"
+    data-imageboss-src="/image.jpg"
     data-imageboss-operation="cover"
     data-imageboss-cover-mode="face"
 />
@@ -112,7 +112,7 @@ For more options: https://imageboss.me/docs/operations/cover
 Options can be any of those available for the operation you are trying to achieve. More information at: https://imageboss.me/docs
 ```html
 <img
-    data-imageboss-src="https://mysite.com/image.jpg"
+    data-imageboss-src="/image.jpg"
     data-imageboss-operation="cover"
     data-imageboss-cover-mode="face"
     data-imageboss-options="grayscale:true,blur:2"
