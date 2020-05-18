@@ -57,8 +57,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       template = '/:source/:operation/:height/:options';
     }
 
-    var finalUrl = template.replace(':source', localOptions.source).replace(':operation', operation || '').replace(':cover_mode', coverMode || '').replace(':width', width || '').replace(':height', height || '').replace(':options', options || '').replace(/\/\//g, '/').replace(/:\//g, '/');
-    return serviceUrl + finalUrl + src.pathname;
+    var finalPath = template.replace(':source', localOptions.source).replace(':operation', operation || '').replace(':cover_mode', coverMode || '').replace(':width', width || '').replace(':height', height || '').replace(':options', options || '').replace(/:\//g, '/');
+    finalPath = (finalPath + src.pathname).replace(/\/\//g, '/');
+    return serviceUrl + finalPath;
   }
 
   function isImg(element) {

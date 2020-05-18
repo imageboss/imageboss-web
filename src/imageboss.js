@@ -42,17 +42,18 @@
             template = '/:source/:operation/:height/:options';
         }
 
-        const finalUrl = template
+        let finalPath = template
             .replace(':source', localOptions.source)
             .replace(':operation', operation || '')
             .replace(':cover_mode', coverMode || '')
             .replace(':width', width || '')
             .replace(':height', height || '')
             .replace(':options', options || '')
-            .replace(/\/\//g, '/')
             .replace(/:\//g, '/')
 
-        return serviceUrl + finalUrl + src.pathname;
+        finalPath = (finalPath + src.pathname).replace(/\/\//g, '/');
+
+        return serviceUrl + finalPath;
     }
 
     function isImg(element) {
