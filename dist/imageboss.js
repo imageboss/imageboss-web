@@ -290,7 +290,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }
 
       return src && !isFullyLoaded(img);
-    }).map(handleSrcset).forEach(handleSrc);
+    }) // .map(handleSrcset)
+    .forEach(handleSrc);
   }
 
   ;
