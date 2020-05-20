@@ -283,7 +283,7 @@
 
                 return src && !isFullyLoaded(img);
             })
-            .map(handleSrcset)
+            // .map(handleSrcset)
             .forEach(handleSrc);
     };
 
