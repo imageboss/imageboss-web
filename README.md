@@ -23,7 +23,7 @@ Add this snippet right before the `</body>` tag (at the end of your document).
         dpr: true // use dpr for your images when supported
     };
 </script>
-<script src="//cdn.jsdelivr.net/gh/imageboss/imageboss-web@4.1.3/dist/imageboss.min.js" type="text/javascript"></script>
+<script src="//cdn.jsdelivr.net/gh/imageboss/imageboss-web@4.1.4/dist/imageboss.min.js" type="text/javascript"></script>
 ```
 
 ### Pre-connect
