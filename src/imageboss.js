@@ -1,5 +1,10 @@
 /* Copyright © 2019 ImageBoss. All rights reserved. */
-(function () {
+(function (window) {
+
+    if (!window) {
+        return;
+    }
+
     const ImageBoss = window.ImageBoss;
     const serviceHost = 'img.imageboss.me';
     const serviceUrl = `https://${serviceHost}`;
