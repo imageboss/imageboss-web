@@ -19,7 +19,7 @@
         lowRes: isDefined('lowRes', false),
         lowResSize: isDefined('lowResSize', 0.4),
         devMode: isDefined('devMode', false),
-        dpr: isDefined('dpr', true),
+        dpr: isDefined('dpr', false),
         webp: isDefined('webp', true),
         animation: isDefined('animation', false)
     };
