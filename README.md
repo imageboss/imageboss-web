@@ -9,8 +9,9 @@
 
 
 ## Setup
-Add this snippet right before the `</body>` tag (at the end of your document).
+Add this snippet right between your `<head>` tag.
 ```html
+<link rel="preconnect" href="//img.imageboss.me">
 <script type="text/javascript">
     window.ImageBoss = {
         source: 'mywebsite-images',
@@ -20,18 +21,19 @@ Add this snippet right before the `</body>` tag (at the end of your document).
         lowRes: false, // deliver a low-resolution of your image first.
         webp: true, // use webp when supported
         lazyload: true, // lazyload your images
-        dpr: true // use dpr for your images when supported
+        dpr: false // use dpr for your images when supported
     };
 </script>
-<script src="//cdn.jsdelivr.net/gh/imageboss/imageboss-web@4.1.4/dist/imageboss.min.js" type="text/javascript"></script>
+<script async src="//cdn.jsdelivr.net/gh/imageboss/imageboss-web@4.1.4/dist/imageboss.min.js" type="text/javascript"></script>
 ```
 
 ### Pre-connect
-You might want to add this between your `<head>`:
+This is optinal but can speed up the delivery of your images:
 ```html
 <link rel="preconnect" href="//img.imageboss.me">
 ```
 
+### Change your <img /> tags
 Replace your `<img />` tags from this (example):
 ```html
 <img src="myimage.jpg" width="150" />
