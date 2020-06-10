@@ -197,14 +197,15 @@
         }
 
         if (wrongDimentions) {
+            operation = 'cdn';
             console.error(
                 'ImageBossError: We couldn\'t to determine de dimensions of your image based on your markup. \
-              Make sure you set it using CSS (width:), width="" or imageboss-width="" attribute.',
+                Make sure you set it using CSS (width:), width="" or imageboss-width="" attribute. Using CDN operation as fallback.',
                 img, operation, width, height
             );
         }
 
-        if (!localOptions.source || wrongDimentions || localOptions.devMode) {
+        if (!localOptions.source || localOptions.devMode) {
             setAttribute(img, 'loaded', true);
             return setImage(img, src);
         }
