@@ -26,7 +26,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     lowRes: isDefined('lowRes', false),
     lowResSize: isDefined('lowResSize', 0.4),
     devMode: isDefined('devMode', false),
-    dpr: isDefined('dpr', true),
+    dpr: isDefined('dpr', false),
     webp: isDefined('webp', true),
     animation: isDefined('animation', false)
   };
@@ -206,18 +206,19 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       height,
       options
     } = parseImageOptions(img);
-    var wrongDimentions = operation === 'width' ? width <= 1 : width <= 1 && height <= 1;
+    var wrongDimentions = operation === 'width' ? width <= 2 : width <= 2 && height <= 2;
 
     if (!localOptions.source) {
       console.error('ImageBossError: You need to inform an image source!');
     }
 
     if (wrongDimentions) {
+      operation = 'cdn';
       console.error('ImageBossError: We couldn\'t to determine de dimensions of your image based on your markup. \
-              Make sure you set it using CSS (width:), width="" or imageboss-width="" attribute.', img, operation, width, height);
+                Make sure you set it using CSS (width:), width="" or imageboss-width="" attribute. Using CDN operation as fallback.', img, operation, width, height);
     }
 
-    if (!localOptions.source || wrongDimentions || localOptions.devMode) {
+    if (!localOptions.source || localOptions.devMode) {
       setAttribute(img, 'loaded', true);
       return setImage(img, src);
     }
