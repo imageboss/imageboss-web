@@ -190,7 +190,7 @@
         let { src, operation, coverMode, lowRes,
             width, height, options } = parseImageOptions(img);
 
-        const wrongDimentions = operation === 'width' ? width <= 1 : width <= 1 && height <= 1;
+        const wrongDimentions = operation === 'width' ? width <= 2 : width <= 2 && height <= 2;
 
         if (!localOptions.source) {
             console.error('ImageBossError: You need to inform an image source!')
