@@ -152,7 +152,7 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
       options: parseOptions(getAttribute(img, 'options')),
       lowRes: isEnabled(img, 'low-res'),
       dprDisabled: isEnabled(img, 'dpr'),
-      class: getAttribute(img, 'class')
+      class: (getAttribute(img, 'class') || '').split(' ').filter(a => a)
     };
   }
 
@@ -195,6 +195,10 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
     } = imageParams;
     var breakpoints;
 
+    if (!sizes) {
+      return img;
+    }
+
     if (srcset) {
       breakpoints = srcset.split(',').map(line => {
         var {
@@ -218,27 +222,24 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
       });
     }
 
-    if (sizes) {
-      aspectRatio = width / height;
-      srcset = breakpoints.map((_ref2) => {
-        var {
-          url,
-          width
-        } = _ref2;
-        newHeight = width / aspectRatio;
-        var defaultParams = {
-          source,
-          operation,
-          coverMode,
-          width,
-          height: Math.round(newHeight),
-          options: options.join(',')
-        };
-        return "".concat(getUrl(buildSrc(url), defaultParams), " ").concat(width, "w");
-      }).join(', ');
-      img.setAttribute(localOptions.srcsetPropKey, srcset);
-    }
-
+    aspectRatio = width / height;
+    srcset = breakpoints.map((_ref2) => {
+      var {
+        url,
+        width
+      } = _ref2;
+      newHeight = width / aspectRatio;
+      var defaultParams = {
+        source,
+        operation,
+        coverMode,
+        width,
+        height: Math.round(newHeight),
+        options: options.join(',')
+      };
+      return "".concat(getUrl(buildSrc(url), defaultParams), " ").concat(width, "w");
+    }).join(', ');
+    img.setAttribute(localOptions.srcsetPropKey, srcset);
     return img;
   }
 
@@ -293,7 +294,7 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
     }
 
     setImage(img, getUrl(src, defaultParams));
-    img.classList.add(imageParams.class);
+    imageParams.class.forEach(c => img.classList.add(c));
   }
 
   function lookup(nodeList) {
