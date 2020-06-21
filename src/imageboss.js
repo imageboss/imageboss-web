@@ -125,7 +125,7 @@
             options: parseOptions(getAttribute(img, 'options')),
             lowRes: isEnabled(img, 'low-res'),
             dprDisabled: isEnabled(img, 'dpr'),
-            class: getAttribute(img, 'class')
+            class: (getAttribute(img, 'class') || '').split(' ').filter((a) => a)
         };
     }
 
@@ -159,6 +159,10 @@
             width, height, options } = imageParams;
         let breakpoints;
 
+        if (!sizes) {
+            return img;
+        }
+
         if (srcset) {
             breakpoints = srcset.split(',').map((line) => {
                 const { width, url } = line.trim().match(/(?<url>.+) (?<width>\d+)w/).groups;
@@ -170,23 +174,21 @@
             });
         }
 
-        if (sizes) {
-            aspectRatio = width / height;
-            srcset = breakpoints.map(({ url, width }) => {
+        aspectRatio = width / height;
+        srcset = breakpoints.map(({ url, width }) => {
 
-                newHeight = width / aspectRatio;
+            newHeight = width / aspectRatio;
 
-                const defaultParams = {
-                    source,
-                    operation, coverMode,
-                    width, height: Math.round(newHeight),
-                    options: options.join(','),
-                };
+            const defaultParams = {
+                source,
+                operation, coverMode,
+                width, height: Math.round(newHeight),
+                options: options.join(','),
+            };
 
-                return `${getUrl(buildSrc(url), defaultParams)} ${width}w`;
-            }).join(', ');
-            img.setAttribute(localOptions.srcsetPropKey, srcset);
-        }
+            return `${getUrl(buildSrc(url), defaultParams)} ${width}w`;
+        }).join(', ');
+        img.setAttribute(localOptions.srcsetPropKey, srcset);
 
         return img;
     }
@@ -238,8 +240,7 @@
         }
 
         setImage(img, getUrl(src, defaultParams));
-        img.classList.add(imageParams.class);
-
+        imageParams.class.forEach((c) => img.classList.add(c));
     }
 
     function lookup(nodeList) {
