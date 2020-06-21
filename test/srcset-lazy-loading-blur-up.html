@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8" />
+    <title>Lazy Loading</title>
+
+    <style type="text/css">
+        #galery {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .blur-up {
+            -webkit-filter: blur(50px);
+            filter: blur(50px);
+            transition: filter 1s 500ms, -webkit-filter 1s 500ms;
+        }
+        .blur-up.lazyloaded {
+            -webkit-filter: blur(0);
+            filter: blur(0);
+        }
+
+        img {
+            width: 60%
+        }
+    </style>
+
+    <!-- snippet start -->
+    <script type="text/javascript">
+        window.ImageBoss = {
+            srcPropKey: 'data-src',
+            lowsrcPropKey: 'data-lowsrc',
+            srcsetPropKey: 'data-srcset',
+            source: 'igorescobar',
+            lowRes: true,
+        };
+    </script>
+    <script src="../src/imageboss.js" type="text/javascript"></script>
+
+</head>
+
+<body>
+    <div id="galery">
+        <img
+            src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+            data-imageboss-src="http://www.igorescobar.com/blog/wp-content/uploads/2014/08/golden-bg.jpeg"
+            sizes="(max-width: 1000px) 100vw, 1000px"
+            class="lazyload blur-up"
+        />
+
+        <img
+            src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+            data-imageboss-src="http://www.igorescobar.com/blog/wp-content/uploads/2014/08/golden-bg.jpeg"
+            sizes="(max-width: 1000px) 100vw, 1000px"
+            class="lazyload blur-up"
+        />
+
+        <img
+            src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+            data-imageboss-src="http://www.igorescobar.com/blog/wp-content/uploads/2014/08/golden-bg.jpeg"
+            sizes="(max-width: 1000px) 100vw, 1000px"
+            class="lazyload blur-up"
+        />
+
+        <img
+            src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+            data-imageboss-src="http://www.igorescobar.com/blog/wp-content/uploads/2014/08/golden-bg.jpeg"
+            sizes="(max-width: 1000px) 100vw, 1000px"
+            class="lazyload blur-up"
+        />
+
+        <img
+            src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+            data-imageboss-src="http://www.igorescobar.com/blog/wp-content/uploads/2014/08/golden-bg.jpeg"
+            sizes="(max-width: 1000px) 100vw, 1000px"
+            class="lazyload blur-up"
+        />
+
+        <img
+            src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+            data-imageboss-src="http://www.igorescobar.com/blog/wp-content/uploads/2014/08/golden-bg.jpeg"
+            sizes="(max-width: 1000px) 100vw, 1000px"
+            class="lazyload blur-up"
+        />
+
+        <img
+            src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+            data-imageboss-src="/blog/wp-content/uploads/2018/05/BRO_ResponsiveDesign_Main2-1000x288.png"
+            sizes="(max-width: 1000px) 100vw, 1000px"
+            class="lazyload blur-up"
+        />
+    </div>
+
+    <script src="http://afarkas.github.io/lazysizes/lazysizes.min.js"></script>
+    <script src="https://raw.githubusercontent.com/aFarkas/lazysizes/gh-pages/plugins/blur-up/ls.blur-up.min.js"></script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-/* Copyright © 2019 ImageBoss. All rights reserved. */
+/* Copyright © 2020 ImageBoss. All rights reserved. */
 (function (window) {
 
     if (!window) {
@@ -11,17 +11,18 @@
     const localOptions = {
         propKey: 'data-imageboss',
         imgPropKey: 'data-imageboss-src',
+        bgPropKey: 'data-imageboss-bg-src',
+        sourcePropKey: 'data-imageboss-srcset',
+        srcPropKey: isDefined('srcPropKey', 'src'),
+        lowsrcPropKey: isDefined('lowsrcPropKey', 'data-lowsrc'),
+        srcsetPropKey: isDefined('srcsetPropKey', 'srcset'),
         matchHosts: isDefined('matchHosts', []),
         source: isDefined('source'),
-        bgPropKey: 'data-imageboss-bg-src',
         dprSupport: window.devicePixelRatio > 1,
-        lazyload: isDefined('lazyload', true),
         lowRes: isDefined('lowRes', false),
-        lowResSize: isDefined('lowResSize', 0.4),
         devMode: isDefined('devMode', false),
         dpr: isDefined('dpr', false),
-        webp: isDefined('webp', true),
-        animation: isDefined('animation', false)
+        webp: isDefined('webp', true)
     };
 
     function isDefined(prop, fallback, object = ImageBoss) {
@@ -75,26 +76,12 @@
         return parser;
     }
 
-    function setOpacity(element, opacity) {
-        if (isEnabled(element, 'animation')) {
-            element.style.opacity = `${opacity}`;
-        }
-    }
-
     function setImage(element, url) {
         if (isImg(element)) {
-            element.setAttribute('src', url);
+            element.setAttribute(localOptions.srcPropKey, url);
         } else if (isBg(element)) {
             element.style.backgroundImage = `url('${url}')`;
         }
-    }
-
-    function isVisible(img) {
-        if (!isEnabled(img, 'lazyload')) {
-            return true;
-        }
-
-        return getAttribute(img, 'visible');
     }
 
     function isFullyLoaded(img) {
@@ -107,15 +94,6 @@
 
     function setAttribute(el, attr, val) {
         return el.setAttribute(`${localOptions.propKey}-${attr}`, val);
-    }
-
-    function waitToBeLoaded(img, url, callback) {
-        const image = new Image();
-        image.src = url;
-        image.addEventListener('load', callback);
-        image.addEventListener('error', () => {
-            setAttribute(img, 'loaded', true);
-        });
     }
 
     function yieldValidSize(size) {
@@ -138,7 +116,7 @@
         return {
             src: buildSrc(getAttribute(img, 'src') || getAttribute(img, 'bg-src')),
             srcset: getAttribute(img, 'srcset'),
-            sizes: getAttribute(img, 'sizes'),
+            sizes: img.getAttribute('sizes'),
             operation: getAttribute(img, 'operation') || 'width',
             coverMode: getAttribute(img, 'cover-mode'),
             width: resolveSize(img, 'width'),
@@ -149,53 +127,77 @@
             dprDisabled: isEnabled(img, 'dpr')
         };
     }
+
     function parseOptions(options) {
         return (options || '').split(',').filter(opts => opts);
     }
 
-    function handleSrcset(img) {
-        let { srcset, src, sizes } = parseImageOptions(img);
-        if (!localOptions.devMode && srcset) {
-            srcset = srcset.split(',').map((breakpoint) => {
-                // ... 500w
-                let sizew = breakpoint.match(/ (\d+)w$/);
+    function generateWidths(targetWidth) {
+        const MIN_WIDTH = 100;
+        const MAX_WIDTH = 5000;
+        const widths = [targetWidth];
 
-                if (sizew) {
-                    const options = parseOptions(getAttribute(img, 'options'));
+        let currWidth = targetWidth;
 
-                    if (isEnabled(img, 'webp') && localOptions.webpSupport) {
-                        options.push('format:webp');
-                    }
+        while (currWidth >= MIN_WIDTH) {
+            currWidth -= currWidth * 0.5;
+            widths.push(Math.round(currWidth));
+        }
 
-                    sizew = sizew[1];
-                    const defaultParams = {
-                        operation: 'width',
-                        width: sizew,
-                        options,
-                    };
+        currWidth = targetWidth;
+        while (currWidth <= MAX_WIDTH) {
+            currWidth *= 1.5;
+            widths.push(Math.round(currWidth));
+        }
 
-                    const newUrl = getUrl(src, defaultParams);
-                    return `${newUrl} ${sizew}w`;
-                }
-            }).join(',');
+        return widths.filter((w) => w < MAX_WIDTH && w >= MIN_WIDTH);
+    }
 
-            img.setAttribute('srcset', srcset);
-            img.setAttribute('sizes', sizes);
+    function handleSrcSet(img, imageParams) {
+        let { srcset, src, sizes, operation, coverMode,
+            width, height, options } = imageParams;
+        let breakpoints;
+
+        if (srcset) {
+            breakpoints = srcset.split(',').map((line) => {
+                const { width, url } = line.trim().match(/(?<url>.+) (?<width>\d+)w/).groups;
+                return { width, url };
+            });
+        } else {
+            breakpoints = generateWidths(width).map(function (w) {
+                return { url: src, width: w }
+            });
+        }
+
+        if (sizes) {
+            aspectRatio = width / height;
+            srcset = breakpoints.map(({ url, width }) => {
+
+                newHeight = width / aspectRatio;
+
+                const defaultParams = {
+                    operation, coverMode,
+                    width, height: Math.round(newHeight),
+                    options: options.join(','),
+                };
+
+                return `${getUrl(buildSrc(url), defaultParams)} ${width}w`;
+            }).join(', ');
+            img.setAttribute(localOptions.srcsetPropKey, srcset);
         }
 
         return img;
     }
 
-    function handleSrc(img) {
+    function handleSrc(img, imageParams) {
         let { src, operation, coverMode, lowRes,
-            width, height, options } = parseImageOptions(img);
+              width, height, options } = imageParams;
 
-        const wrongDimentions = operation === 'width' ? width <= 2 : width <= 2 && height <= 2;
-
-        if (!localOptions.source) {
-            console.error('ImageBossError: You need to inform an image source!')
+        if (img.tagName === 'SOURCE') {
+            return;
         }
 
+        const wrongDimentions = operation === 'width' ? width <= 2 : width <= 2 && height <= 2;
         if (wrongDimentions) {
             operation = 'cdn';
             console.error(
@@ -205,17 +207,13 @@
             );
         }
 
-        if (!localOptions.source || localOptions.devMode) {
-            setAttribute(img, 'loaded', true);
-            return setImage(img, src);
-        }
-
-        if (localOptions.webp && localOptions.webpSupport) {
-            options.push('format:webp');
-        }
-
         if (localOptions.dprSupport && isEnabled(img, 'dpr')) {
             options.push('dpr:2');
+        }
+
+
+        if (isBg(img) && getComputedStyle(img).backgroundSize === "auto") {
+            img.style.backgroundSize = `100%`;
         }
 
         const defaultParams = {
@@ -224,52 +222,19 @@
             options: options.join(','),
         };
 
-        const newUrl = getUrl(src, defaultParams);
-
-        setOpacity(img, 0.1);
-
-        if (isEnabled(img, 'animation')) {
-            img.style.transition = 'opacity 0.5s';
-        }
-
-        if (isBg(img) && getComputedStyle(img).backgroundSize === "auto") {
-            img.style.backgroundSize = `100%`;
-        }
-
-        if (!lowRes && isVisible(img)) {
-            setImage(img, newUrl);
-            waitToBeLoaded(img, newUrl, function () {
-                setAttribute(img, 'loaded', true);
-                setOpacity(img, 1.0);
-            });
-            return;
-        }
-
         if (lowRes) {
-            if (!getAttribute(img, 'low-res-loaded')) {
-                options.push('quality:07');
-                const lowResUrl = getUrl(src, {
-                    ...defaultParams,
-                    width: Math.round(width * localOptions.lowResSize),
-                    height: Math.round(height * localOptions.lowResSize),
-                    options: options
-                        .filter(opts => !opts.match(/dpr/))
-                        .join(','),
-                });
-
-                setImage(img, lowResUrl);
-                setAttribute(img, 'low-res-loaded', true);
-            }
-
-            if (isVisible(img) && !getAttribute(img, 'loading')) {
-                setAttribute(img, 'loading', true);
-                waitToBeLoaded(img, newUrl, function () {
-                    setAttribute(img, 'loaded', true);
-                    setImage(img, newUrl);
-                    setOpacity(img, 1.0);
-                })
-            }
+            const lowResUrl = getUrl(src, {
+                ...defaultParams,
+                width: 10,
+                height: 10,
+                options: options
+                    .filter(opts => !opts.match(/dpr/))
+                    .join(','),
+            });
+            img.setAttribute(localOptions.lowsrcPropKey, lowResUrl);
         }
+
+        setImage(img, getUrl(src, defaultParams));
     }
 
     function lookup(nodeList) {
@@ -280,7 +245,7 @@
                     return false;
                 }
 
-                const src = buildSrc(getAttribute(img, 'src') || getAttribute(img, 'bg-src'));
+                const src = buildSrc(getAttribute(img, 'src') || getAttribute(img, 'srcset') || getAttribute(img, 'bg-src'));
                 const matchPattern = RegExp(localOptions.matchHosts.join('|'));
 
                 if (localOptions.matchHosts.length && src && !src.href.match(matchPattern)) {
@@ -289,8 +254,26 @@
 
                 return src && !isFullyLoaded(img);
             })
-            // .map(handleSrcset)
-            .forEach(handleSrc);
+            .forEach((img) => {
+                const imageParams = parseImageOptions(img);
+                let { src, operation, width, height, options } = imageParams;
+
+                if (!localOptions.source) {
+                    console.error('ImageBossError: You need to inform an image source!')
+                }
+
+                if (!localOptions.source || localOptions.devMode) {
+                    setAttribute(img, 'loaded', true);
+                    return setImage(img, src);
+                }
+
+                if (localOptions.webp && localOptions.webpSupport) {
+                    options.push('format:webp');
+                }
+
+                handleSrcSet(img, { ...imageParams, options });
+                handleSrc(img, { ...imageParams, options, operation });
+            });
     };
 
     (function webpDetection(callback, enabled) {
@@ -304,7 +287,7 @@
         img.onerror = callback.bind(this, false);
     })(function (webSupport) {
         localOptions.webpSupport = webSupport;
-        const defaultSelector = `[${localOptions.imgPropKey}],[${localOptions.bgPropKey}]`;
+        const defaultSelector = `[${localOptions.imgPropKey}],source[${localOptions.sourcePropKey}],[${localOptions.bgPropKey}]`;
         const elements = document.querySelectorAll(defaultSelector);
 
         function mutationLookup(target) {
@@ -329,37 +312,16 @@
         }
 
         const defaultCallback = () => lookup(elements);
-        let lazyImageObserver;
+
         // call it if its already ready.
         if (document.readyState !== 'loading') {
             defaultCallback();
         }
 
-        if ("IntersectionObserver" in window) {
-            lazyImageObserver = new IntersectionObserver(function (entries) {
-                entries.forEach(function (entry) {
-                    if (entry.isIntersecting) {
-                        let el = entry.target;
-                        setAttribute(el, 'visible', true);
-                        mutationLookup([el]);
-                        lazyImageObserver.unobserve(el);
-                    }
-                });
-            });
-
-            [].slice.call(elements).forEach(function (lazyImage) {
-                lazyImageObserver.observe(lazyImage);
-            });
-        }
-
         // in case the user do not add the script at the bottom
         window.addEventListener("DOMContentLoaded", defaultCallback);
-        window.addEventListener("DOMNodeInserted", function (observer, e) {
+        window.addEventListener("DOMNodeInserted", function (e) {
             mutationLookup(e.target);
-            const elements = document.querySelectorAll(`${defaultSelector}:not([${localOptions.propKey}-loaded="true"])`);
-            [].slice.call(elements).forEach(function (lazyImage) {
-                observer.observe(lazyImage);
-            });
-        }.bind(null, lazyImageObserver));
+        });
     }, localOptions.webp);
 })(window);
