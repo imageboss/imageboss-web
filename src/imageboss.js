@@ -138,7 +138,7 @@
         const MAX_WIDTH = 5000;
         const widths = [targetWidth];
 
-        let currWidth = targetWidth;
+        let currWidth = targetWidth || MIN_WIDTH;
 
         while (currWidth >= MIN_WIDTH) {
             currWidth -= currWidth * 0.5;
