@@ -86,7 +86,7 @@ window.ImageBoss = {
     ...
 };
 ```
-And add the `class="lazyload"` to your images. But feel free to check their docs in detail.
+And add the `data-imageboss-class="lazyload"` to your images. But feel free to check their docs in detail.
 
 #### Low Quality Image Placeholder
 If you are using [lazy-sizes](https://github.com/aFarkas/lazysizes) and want to display a low resolution image while the high one loads in background you can do it by changing the settings a bit:
@@ -99,6 +99,7 @@ window.ImageBoss = {
     ...
 };
 ```
+Also, make sure to use `data-imageboss-class` instead of just `class`. This way we make sure we add the class only after the initialization.
 
 For more options like animations and customizations on this behavior take a look into the [lazy-sizes docs](https://github.com/aFarkas/lazysizes#lqipblurry-image-placeholderblur-up-image-technique).
 

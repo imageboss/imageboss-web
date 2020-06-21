@@ -123,9 +123,9 @@
             height: resolveSize(img, 'height'),
             source: getAttribute(img, 'source') || localOptions.source,
             options: parseOptions(getAttribute(img, 'options')),
-            lazyload: isEnabled(img, 'lazyload'),
             lowRes: isEnabled(img, 'low-res'),
-            dprDisabled: isEnabled(img, 'dpr')
+            dprDisabled: isEnabled(img, 'dpr'),
+            class: getAttribute(img, 'class')
         };
     }
 
@@ -238,6 +238,8 @@
         }
 
         setImage(img, getUrl(src, defaultParams));
+        img.classList.add(imageParams.class);
+
     }
 
     function lookup(nodeList) {
