@@ -164,7 +164,7 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
     var MIN_WIDTH = 100;
     var MAX_WIDTH = 5000;
     var widths = [targetWidth];
-    var currWidth = targetWidth;
+    var currWidth = targetWidth || MIN_WIDTH;
 
     while (currWidth >= MIN_WIDTH) {
       currWidth -= currWidth * 0.5;
