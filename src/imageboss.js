@@ -37,7 +37,7 @@
         return isAttrDefined ? attributeValue === "true" && attributeValue !== true : isDefined(option, false, localOptions)
     }
 
-    function getUrl(src, { operation, coverMode, width, height, options }) {
+    function getUrl(src, { source, operation, coverMode, width, height, options }) {
         let template = '/:source/:operation/:options';
 
         if (operation === 'cover') {
@@ -49,7 +49,7 @@
         }
 
         let finalPath = template
-            .replace(':source', localOptions.source)
+            .replace(':source', source)
             .replace(':operation', operation || '')
             .replace(':cover_mode', coverMode || '')
             .replace(':width', width || '')
@@ -121,6 +121,7 @@
             coverMode: getAttribute(img, 'cover-mode'),
             width: resolveSize(img, 'width'),
             height: resolveSize(img, 'height'),
+            source: getAttribute(img, 'source') || localOptions.source,
             options: parseOptions(getAttribute(img, 'options')),
             lazyload: isEnabled(img, 'lazyload'),
             lowRes: isEnabled(img, 'low-res'),
@@ -154,7 +155,7 @@
     }
 
     function handleSrcSet(img, imageParams) {
-        let { srcset, src, sizes, operation, coverMode,
+        let { source, srcset, src, sizes, operation, coverMode,
             width, height, options } = imageParams;
         let breakpoints;
 
@@ -176,6 +177,7 @@
                 newHeight = width / aspectRatio;
 
                 const defaultParams = {
+                    source,
                     operation, coverMode,
                     width, height: Math.round(newHeight),
                     options: options.join(','),
@@ -190,7 +192,7 @@
     }
 
     function handleSrc(img, imageParams) {
-        let { src, operation, coverMode, lowRes,
+        let { source, src, operation, coverMode, lowRes,
               width, height, options } = imageParams;
 
         if (img.tagName === 'SOURCE') {
@@ -217,6 +219,7 @@
         }
 
         const defaultParams = {
+            source,
             operation, coverMode,
             width, height,
             options: options.join(','),
@@ -256,13 +259,13 @@
             })
             .forEach((img) => {
                 const imageParams = parseImageOptions(img);
-                let { src, operation, width, height, options } = imageParams;
+                let { source, src, operation, options } = imageParams;
 
-                if (!localOptions.source) {
+                if (!source) {
                     console.error('ImageBossError: You need to inform an image source!')
                 }
 
-                if (!localOptions.source || localOptions.devMode) {
+                if (!source || localOptions.devMode) {
                     setAttribute(img, 'loaded', true);
                     return setImage(img, src);
                 }

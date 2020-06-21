@@ -1,4 +1,4 @@
-# ImageBoss Web
+<img src="https://img.imageboss.me/boss-images/width/180/dpr:2/emails/logo-2@2x.png" width="180"/>
 
   - [Main Features](#main-features)
   - [Setup](#setup)
@@ -13,6 +13,7 @@
     - [Responsive Images with `srcset`](#responsive-images-with-srcset)
     - [Responsive Images with `picture`](#responsive-images-with-picture)
   - [[attrs]](#attrs)
+    - [data-imageboss-source](#data-imageboss-source)
     - [data-imageboss-low-res](#data-imageboss-low-res)
     - [data-imageboss-operation](#data-imageboss-operation)
     - [data-imageboss-width](#data-imageboss-width)
@@ -20,7 +21,6 @@
     - [data-imageboss-cover-mode](#data-imageboss-cover-mode)
     - [data-imageboss-options](#data-imageboss-options)
     - [data-imageboss-dpr](#data-imageboss-dpr)
-
 
 ## Main Features
 * Detect/request WebP images.
@@ -175,8 +175,17 @@ Similar to the how you would do with `<img srcset ... />`, just follow set the `
 
 
 ## [attrs]
+### data-imageboss-source
+In case you need to use a different source then the one mentioned globally.
+```html
+<img
+    data-imageboss-source="my-other-source"
+    ...
+/>
+```
+
 ### data-imageboss-low-res
-When this option is enabled we will first deliver low resolution version of your image while the high resolution one loads in background.
+When this option is enabled we will generate an attribute called `data-lowres` with a low resolution image that can be used for LQIP.
 ```html
 <img
     data-imageboss-src="/image.jpg"
