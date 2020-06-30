@@ -174,7 +174,7 @@
             });
         }
 
-        aspectRatio = width / height;
+        let aspectRatio = width && height ? width / height : 1;
         srcset = breakpoints.map(({ url, width }) => {
 
             newHeight = width / aspectRatio;
