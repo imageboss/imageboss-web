@@ -228,7 +228,7 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
         url,
         width
       } = _ref2;
-      newHeight = width / aspectRatio;
+      var newHeight = width / aspectRatio;
       var defaultParams = {
         source,
         operation,
