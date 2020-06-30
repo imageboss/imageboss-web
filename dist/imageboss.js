@@ -222,7 +222,7 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
       });
     }
 
-    aspectRatio = width / height;
+    var aspectRatio = width && height ? width / height : 1;
     srcset = breakpoints.map((_ref2) => {
       var {
         url,
