@@ -177,7 +177,7 @@
         let aspectRatio = width && height ? width / height : 1;
         srcset = breakpoints.map(({ url, width }) => {
 
-            newHeight = width / aspectRatio;
+            let newHeight = width / aspectRatio;
 
             const defaultParams = {
                 source,
