@@ -46,7 +46,7 @@ Add this snippet right between your `<head>` tag.
 ```
 
 ### Pre-connect
-This is optinal but can speed up the delivery of your images:
+This is optional but can speed up the delivery of your images:
 ```html
 <link rel="preconnect" href="//img.imageboss.me">
 ```
