@@ -36,10 +36,10 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
   var serviceHost = 'img.imageboss.me';
   var serviceUrl = "https://".concat(serviceHost);
   var localOptions = {
-    propKey: 'data-imageboss',
-    imgPropKey: 'data-imageboss-src',
-    bgPropKey: 'data-imageboss-bg-src',
-    sourcePropKey: 'data-imageboss-srcset',
+    protectedKey: 'data-imageboss',
+    imgPropKey: isDefined('imgPropKey', 'data-imageboss-src'),
+    bgPropKey: isDefined('bgPropKey', 'data-imageboss-bg-src'),
+    sourcePropKey: isDefined('sourcePropKey', 'data-imageboss-srcset'),
     srcPropKey: isDefined('srcPropKey', 'src'),
     lowsrcPropKey: isDefined('lowsrcPropKey', 'data-lowsrc'),
     srcsetPropKey: isDefined('srcsetPropKey', 'srcset'),
@@ -59,7 +59,7 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
   }
 
   function isEnabled(el, option) {
-    var attributeValue = getAttribute(el, option);
+    var attributeValue = getProtectedAttribute(el, option);
     var isAttrDefined = [null, undefined].indexOf(attributeValue) == -1;
     return isAttrDefined ? attributeValue === "true" && attributeValue !== true : isDefined(option, false, localOptions);
   }
@@ -89,11 +89,11 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
   }
 
   function isImg(element) {
-    return !!getAttribute(element, 'src');
+    return !!element.getAttribute(localOptions.imgPropKey);
   }
 
   function isBg(element) {
-    return !!getAttribute(element, 'bg-src');
+    return !!element.getAttribute(localOptions.bgPropKey);
   }
 
   function buildSrc(src) {
@@ -111,15 +111,15 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
   }
 
   function isFullyLoaded(img) {
-    return img && getAttribute(img, 'loaded');
+    return img && getProtectedAttribute(img, 'loaded');
   }
 
-  function getAttribute(el, attr) {
-    return el.getAttribute("".concat(localOptions.propKey, "-").concat(attr));
+  function getProtectedAttribute(el, attr) {
+    return el.getAttribute("".concat(localOptions.protectedKey, "-").concat(attr));
   }
 
-  function setAttribute(el, attr, val) {
-    return el.setAttribute("".concat(localOptions.propKey, "-").concat(attr), val);
+  function setProtectedAttribute(el, attr, val) {
+    return el.setAttribute("".concat(localOptions.protectedKey, "-").concat(attr), val);
   }
 
   function yieldValidSize(size) {
@@ -127,7 +127,7 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
   }
 
   function resolveSize(img, type) {
-    var size = getAttribute(img, type) || yieldValidSize(img.getAttribute(type));
+    var size = getProtectedAttribute(img, type) || yieldValidSize(img.getAttribute(type));
     var attr = "client".concat(type.charAt(0).toUpperCase() + type.slice(1));
 
     if (size) {
@@ -141,18 +141,18 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
 
   function parseImageOptions(img) {
     return {
-      src: buildSrc(getAttribute(img, 'src') || getAttribute(img, 'bg-src')),
-      srcset: getAttribute(img, 'srcset'),
+      src: buildSrc(img.getAttribute(localOptions.imgPropKey) || img.getAttribute(localOptions.bgPropKey)),
+      srcset: img.getAttribute(localOptions.srcsetPropKey),
       sizes: img.getAttribute('sizes'),
-      operation: getAttribute(img, 'operation') || 'width',
-      coverMode: getAttribute(img, 'cover-mode'),
+      operation: getProtectedAttribute(img, 'operation') || 'width',
+      coverMode: getProtectedAttribute(img, 'cover-mode'),
       width: resolveSize(img, 'width'),
       height: resolveSize(img, 'height'),
-      source: getAttribute(img, 'source') || localOptions.source,
-      options: parseOptions(getAttribute(img, 'options')),
+      source: getProtectedAttribute(img, 'source') || localOptions.source,
+      options: parseOptions(getProtectedAttribute(img, 'options')),
       lowRes: isEnabled(img, 'low-res'),
       dprDisabled: isEnabled(img, 'dpr'),
-      class: (getAttribute(img, 'class') || '').split(' ').filter(a => a)
+      class: (getProtectedAttribute(img, 'class') || '').split(' ').filter(a => a)
     };
   }
 
@@ -303,7 +303,7 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
         return false;
       }
 
-      var src = buildSrc(getAttribute(img, 'src') || getAttribute(img, 'srcset') || getAttribute(img, 'bg-src'));
+      var src = buildSrc(img.getAttribute(localOptions.imgPropKey) || img.getAttribute(localOptions.imgsrcPropKey) || img.getAttribute(localOptions.bgPropKey));
       var matchPattern = RegExp(localOptions.matchHosts.join('|'));
 
       if (localOptions.matchHosts.length && src && !src.href.match(matchPattern)) {
@@ -325,7 +325,7 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
       }
 
       if (!source || localOptions.devMode) {
-        setAttribute(img, 'loaded', true);
+        setProtectedAttribute(img, 'loaded', true);
         return setImage(img, src);
       }
 
