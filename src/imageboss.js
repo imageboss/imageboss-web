@@ -9,10 +9,10 @@
     const serviceHost = 'img.imageboss.me';
     const serviceUrl = `https://${serviceHost}`;
     const localOptions = {
-        propKey: 'data-imageboss',
-        imgPropKey: 'data-imageboss-src',
-        bgPropKey: 'data-imageboss-bg-src',
-        sourcePropKey: 'data-imageboss-srcset',
+        protectedKey: 'data-imageboss',
+        imgPropKey: isDefined('imgPropKey', 'data-imageboss-src'),
+        bgPropKey: isDefined('bgPropKey', 'data-imageboss-bg-src'),
+        sourcePropKey: isDefined('sourcePropKey', 'data-imageboss-srcset'),
         srcPropKey: isDefined('srcPropKey', 'src'),
         lowsrcPropKey: isDefined('lowsrcPropKey', 'data-lowsrc'),
         srcsetPropKey: isDefined('srcsetPropKey', 'srcset'),
@@ -32,7 +32,7 @@
     }
 
     function isEnabled(el, option) {
-        const attributeValue = getAttribute(el, option);
+        const attributeValue = getProtectedAttribute(el, option);
         const isAttrDefined = [null, undefined].indexOf(attributeValue) == -1;
         return isAttrDefined ? attributeValue === "true" && attributeValue !== true : isDefined(option, false, localOptions)
     }
@@ -63,11 +63,11 @@
     }
 
     function isImg(element) {
-        return !!getAttribute(element, 'src');
+        return !!element.getAttribute(localOptions.imgPropKey);
     }
 
     function isBg(element) {
-        return !!getAttribute(element, 'bg-src');
+        return !!element.getAttribute(localOptions.bgPropKey);
     }
 
     function buildSrc(src) {
@@ -85,15 +85,15 @@
     }
 
     function isFullyLoaded(img) {
-        return img && getAttribute(img, 'loaded');
+        return img && getProtectedAttribute(img, 'loaded');
     }
 
-    function getAttribute(el, attr) {
-        return el.getAttribute(`${localOptions.propKey}-${attr}`);
+    function getProtectedAttribute(el, attr) {
+        return el.getAttribute(`${localOptions.protectedKey}-${attr}`);
     }
 
-    function setAttribute(el, attr, val) {
-        return el.setAttribute(`${localOptions.propKey}-${attr}`, val);
+    function setProtectedAttribute(el, attr, val) {
+        return el.setAttribute(`${localOptions.protectedKey}-${attr}`, val);
     }
 
     function yieldValidSize(size) {
@@ -101,7 +101,7 @@
     }
 
     function resolveSize(img, type) {
-        let size = getAttribute(img, type) || yieldValidSize(img.getAttribute(type));
+        let size = getProtectedAttribute(img, type) || yieldValidSize(img.getAttribute(type));
         let attr = `client${type.charAt(0).toUpperCase() + type.slice(1)}`;
         if (size) {
             return size;
@@ -114,18 +114,18 @@
 
     function parseImageOptions(img) {
         return {
-            src: buildSrc(getAttribute(img, 'src') || getAttribute(img, 'bg-src')),
-            srcset: getAttribute(img, 'srcset'),
+            src: buildSrc(img.getAttribute(localOptions.imgPropKey) || img.getAttribute(localOptions.bgPropKey)),
+            srcset: img.getAttribute(localOptions.srcsetPropKey),
             sizes: img.getAttribute('sizes'),
-            operation: getAttribute(img, 'operation') || 'width',
-            coverMode: getAttribute(img, 'cover-mode'),
+            operation: getProtectedAttribute(img, 'operation') || 'width',
+            coverMode: getProtectedAttribute(img, 'cover-mode'),
             width: resolveSize(img, 'width'),
             height: resolveSize(img, 'height'),
-            source: getAttribute(img, 'source') || localOptions.source,
-            options: parseOptions(getAttribute(img, 'options')),
+            source: getProtectedAttribute(img, 'source') || localOptions.source,
+            options: parseOptions(getProtectedAttribute(img, 'options')),
             lowRes: isEnabled(img, 'low-res'),
             dprDisabled: isEnabled(img, 'dpr'),
-            class: (getAttribute(img, 'class') || '').split(' ').filter((a) => a)
+            class: (getProtectedAttribute(img, 'class') || '').split(' ').filter((a) => a)
         };
     }
 
@@ -251,9 +251,11 @@
                     return false;
                 }
 
-                const src = buildSrc(getAttribute(img, 'src') || getAttribute(img, 'srcset') || getAttribute(img, 'bg-src'));
+                const src = buildSrc(
+                    img.getAttribute(localOptions.imgPropKey) ||
+                    img.getAttribute(localOptions.imgsrcPropKey) ||
+                    img.getAttribute(localOptions.bgPropKey));
                 const matchPattern = RegExp(localOptions.matchHosts.join('|'));
-
                 if (localOptions.matchHosts.length && src && !src.href.match(matchPattern)) {
                     return false;
                 }
@@ -269,7 +271,7 @@
                 }
 
                 if (!source || localOptions.devMode) {
-                    setAttribute(img, 'loaded', true);
+                    setProtectedAttribute(img, 'loaded', true);
                     return setImage(img, src);
                 }
 
@@ -295,7 +297,6 @@
         localOptions.webpSupport = webSupport;
         const defaultSelector = `[${localOptions.imgPropKey}],source[${localOptions.sourcePropKey}],[${localOptions.bgPropKey}]`;
         const elements = document.querySelectorAll(defaultSelector);
-
         function mutationLookup(target) {
             if (!target) {
                 return;
