@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8" />
+    <title>DPR</title>
+
+    <style type="text/css">
+        #hero {
+            width: 100%;
+        }
+
+        #hero img {
+            width: 100%;
+        }
+
+        #hero-bg {
+            width: 100%;
+            height: 290px;
+        }
+        .doggy {
+            width: 500px;
+        }
+
+        #galery {
+            display: flex;
+            flex-wrap: wrap;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="hero">
+        <img
+            height="288"
+            src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+            data-imageboss-src="/blog/wp-content/uploads/2018/05/BRO_ResponsiveDesign_Main2-1000x288.png"
+            data-imageboss-animation="false"
+        />
+    </div>
+
+    <div id="hero">
+        <img
+            height="288"
+            src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+            data-imageboss-src="/blog/wp-content/uploads/2018/05/BRO_ResponsiveDesign_Main2-1000x288.png"
+            data-imageboss-dpr="true"
+            data-imageboss-options="dpr:2"
+        />
+    </div>
+
+    <div id="hero-bg" data-imageboss-bg-src="/blog/wp-content/uploads/2014/08/golden-bg.jpeg">
+        Background With Text
+    </div>
+    <div id="hero-bg" data-imageboss-operation='cover' data-imageboss-cover-mode='center' data-imageboss-bg-src="/blog/wp-content/uploads/2014/08/golden-bg.jpeg"></div>
+
+    <!-- snippet -->
+    <script type="text/javascript">
+        window.ImageBoss = {
+            source: 'igorescobar',
+            devMode: false,
+            webp: true,
+            dpr: true
+        };
+    </script>
+    <script src="../src/imageboss.js" type="text/javascript"></script>
+</body>
+</html>

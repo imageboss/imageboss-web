@@ -48,6 +48,13 @@
             template = '/:source/:operation/:height/:options';
         }
 
+        if (options) {
+            // unique options
+            options = options.split(',').filter((value, index, self) => {
+                return self.indexOf(value) === index;
+            }).join(',');
+        }
+
         let finalPath = template
             .replace(':source', source)
             .replace(':operation', operation || '')
