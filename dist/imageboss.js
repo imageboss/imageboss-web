@@ -83,6 +83,13 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
       template = '/:source/:operation/:height/:options';
     }
 
+    if (options) {
+      // unique options
+      options = options.split(',').filter((value, index, self) => {
+        return self.indexOf(value) === index;
+      }).join(',');
+    }
+
     var finalPath = template.replace(':source', source).replace(':operation', operation || '').replace(':cover_mode', coverMode || '').replace(':width', width || '').replace(':height', height || '').replace(':options', options || '').replace(/:\//g, '/');
     finalPath = (finalPath + src.pathname).replace(/\/\//g, '/');
     return serviceUrl + finalPath;
