@@ -110,8 +110,10 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
   }
 
   function setImage(element, url) {
+    var srcPropKey = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : localOptions.srcPropKey;
+
     if (isImg(element)) {
-      element.setAttribute(localOptions.srcPropKey, url);
+      element.setAttribute(srcPropKey, url);
     } else if (isBg(element)) {
       element.style.backgroundImage = "url('".concat(url, "')");
     }
@@ -148,6 +150,8 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
 
   function parseImageOptions(img) {
     return {
+      srcPropKey: getProtectedAttribute(img, 'src-prop-key') || localOptions.srcPropKey,
+      srcsetPropKey: getProtectedAttribute(img, 'srcset-prop-key') || localOptions.srcsetPropKey,
       src: buildSrc(img.getAttribute(localOptions.imgPropKey) || img.getAttribute(localOptions.bgPropKey)),
       srcset: img.getAttribute(localOptions.srcsetPropKey),
       sizes: img.getAttribute('sizes'),
@@ -191,6 +195,7 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
   function handleSrcSet(img, imageParams) {
     var {
       source,
+      srcsetPropKey,
       srcset,
       src,
       sizes,
@@ -246,13 +251,14 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
       };
       return "".concat(getUrl(buildSrc(url), defaultParams), " ").concat(width, "w");
     }).join(', ');
-    img.setAttribute(localOptions.srcsetPropKey, srcset);
+    img.setAttribute(srcsetPropKey, srcset);
     return img;
   }
 
   function handleSrc(img, imageParams) {
     var {
       source,
+      srcPropKey,
       src,
       operation,
       coverMode,
@@ -300,7 +306,7 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
       img.setAttribute(localOptions.lowsrcPropKey, lowResUrl);
     }
 
-    setImage(img, getUrl(src, defaultParams));
+    setImage(img, getUrl(src, defaultParams), srcPropKey);
     imageParams.class.forEach(c => img.classList.add(c));
   }
 
