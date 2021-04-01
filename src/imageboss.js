@@ -83,9 +83,9 @@
         return parser;
     }
 
-    function setImage(element, url) {
+    function setImage(element, url, srcPropKey = localOptions.srcPropKey) {
         if (isImg(element)) {
-            element.setAttribute(localOptions.srcPropKey, url);
+            element.setAttribute(srcPropKey, url);
         } else if (isBg(element)) {
             element.style.backgroundImage = `url('${url}')`;
         }
@@ -121,6 +121,8 @@
 
     function parseImageOptions(img) {
         return {
+            srcPropKey: getProtectedAttribute(img, 'src-prop-key') || localOptions.srcPropKey,
+            srcsetPropKey: getProtectedAttribute(img, 'srcset-prop-key') || localOptions.srcsetPropKey,
             src: buildSrc(img.getAttribute(localOptions.imgPropKey) || img.getAttribute(localOptions.bgPropKey)),
             srcset: img.getAttribute(localOptions.srcsetPropKey),
             sizes: img.getAttribute('sizes'),
@@ -162,7 +164,7 @@
     }
 
     function handleSrcSet(img, imageParams) {
-        let { source, srcset, src, sizes, operation, coverMode,
+        let { source, srcsetPropKey, srcset, src, sizes, operation, coverMode,
             width, height, options } = imageParams;
         let breakpoints;
 
@@ -195,13 +197,14 @@
 
             return `${getUrl(buildSrc(url), defaultParams)} ${width}w`;
         }).join(', ');
-        img.setAttribute(localOptions.srcsetPropKey, srcset);
+
+        img.setAttribute(srcsetPropKey, srcset);
 
         return img;
     }
 
     function handleSrc(img, imageParams) {
-        let { source, src, operation, coverMode, lowRes,
+        let { source, srcPropKey, src, operation, coverMode, lowRes,
               width, height, options } = imageParams;
 
         if (img.tagName === 'SOURCE') {
@@ -246,7 +249,7 @@
             img.setAttribute(localOptions.lowsrcPropKey, lowResUrl);
         }
 
-        setImage(img, getUrl(src, defaultParams));
+        setImage(img, getUrl(src, defaultParams), srcPropKey);
         imageParams.class.forEach((c) => img.classList.add(c));
     }
 
