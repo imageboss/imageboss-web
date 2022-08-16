@@ -306,7 +306,6 @@
     })(function (webSupport) {
         localOptions.webpSupport = webSupport;
         const defaultSelector = `[${localOptions.imgPropKey}],source[${localOptions.sourcePropKey}],[${localOptions.bgPropKey}]`;
-        const elements = document.querySelectorAll(defaultSelector);
         function mutationLookup(target) {
             if (!target) {
                 return;
@@ -328,7 +327,7 @@
             mutationLookup(target.childNodes);
         }
 
-        const defaultCallback = () => lookup(elements);
+        const defaultCallback = () => lookup(document.querySelectorAll(defaultSelector));
 
         // call it if its already ready.
         if (document.readyState !== 'loading') {
