@@ -370,7 +370,6 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
   })(function (webSupport) {
     localOptions.webpSupport = webSupport;
     var defaultSelector = "[".concat(localOptions.imgPropKey, "],source[").concat(localOptions.sourcePropKey, "],[").concat(localOptions.bgPropKey, "]");
-    var elements = document.querySelectorAll(defaultSelector);
 
     function mutationLookup(target) {
       if (!target) {
@@ -390,7 +389,7 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
       mutationLookup(target.childNodes);
     }
 
-    var defaultCallback = () => lookup(elements); // call it if its already ready.
+    var defaultCallback = () => lookup(document.querySelectorAll(defaultSelector)); // call it if its already ready.
 
 
     if (document.readyState !== 'loading') {
