@@ -22,7 +22,7 @@
         lowRes: isDefined('lowRes', false),
         devMode: isDefined('devMode', false),
         dpr: isDefined('dpr', false),
-        webp: isDefined('webp', true)
+        format: isDefined('format', 'auto')
     };
 
     function isDefined(prop, fallback, object = ImageBoss) {
@@ -285,59 +285,48 @@
                     return setImage(img, src);
                 }
 
-                if (localOptions.webp && localOptions.webpSupport) {
-                    options.push('format:webp');
+                if (localOptions.format && localOptions.format === 'auto') {
+                    options.push('format:auto');
                 }
 
                 handleSrcSet(img, { ...imageParams, options });
                 handleSrc(img, { ...imageParams, options, operation });
             });
     };
-
-    (function webpDetection(callback, enabled) {
-        if (!enabled) {
-            return callback(false);
+    
+    const defaultSelector = `[${localOptions.imgPropKey}],source[${localOptions.sourcePropKey}],[${localOptions.bgPropKey}]`;
+    function mutationLookup(target) {
+        if (!target) {
+            return;
         }
 
-        var img = new Image();
-        img.src = 'data:image/webp;base64,UklGRh4AAABXRUJQVlA4TBEAAAAvAAAAAAfQ//73v/+BiOh/AAA=';
-        img.onload = callback.bind(this, true);
-        img.onerror = callback.bind(this, false);
-    })(function (webSupport) {
-        localOptions.webpSupport = webSupport;
-        const defaultSelector = `[${localOptions.imgPropKey}],source[${localOptions.sourcePropKey}],[${localOptions.bgPropKey}]`;
-        function mutationLookup(target) {
-            if (!target) {
-                return;
-            }
-
-            if (target.length) {
-                Array.prototype.forEach.call(target, function (node) {
-                    if (
-                        node.attributes &&
-                        (node.attributes[localOptions.imgPropKey] || node.attributes[localOptions.bgPropKey]) &&
-                        !isFullyLoaded(node)
-                    ) {
-                        lookup([node]);
-                    }
-                    mutationLookup(node.childNodes);
-                })
-            }
-
-            mutationLookup(target.childNodes);
+        if (target.length) {
+            Array.prototype.forEach.call(target, function (node) {
+                if (
+                    node.attributes &&
+                    (node.attributes[localOptions.imgPropKey] || node.attributes[localOptions.bgPropKey]) &&
+                    !isFullyLoaded(node)
+                ) {
+                    lookup([node]);
+                }
+                mutationLookup(node.childNodes);
+            })
         }
 
-        const defaultCallback = () => lookup(document.querySelectorAll(defaultSelector));
+        mutationLookup(target.childNodes);
+    }
 
-        // call it if its already ready.
-        if (document.readyState !== 'loading') {
-            defaultCallback();
-        }
+    const defaultCallback = () => lookup(document.querySelectorAll(defaultSelector));
 
-        // in case the user do not add the script at the bottom
-        window.addEventListener("DOMContentLoaded", defaultCallback);
-        window.addEventListener("DOMNodeInserted", function (e) {
-            mutationLookup(e.target);
-        });
-    }, localOptions.webp);
+    // call it if its already ready.
+    if (document.readyState !== 'loading') {
+        defaultCallback();
+    }
+
+    // in case the user do not add the script at the bottom
+    window.addEventListener("DOMContentLoaded", defaultCallback);
+    window.addEventListener("DOMNodeInserted", function (e) {
+        mutationLookup(e.target);
+    });
+
 })(window);

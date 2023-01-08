@@ -23,7 +23,7 @@
     - [data-imageboss-dpr](#data-imageboss-dpr)
 
 ## Main Features
-* Detect/request WebP images.
+* WebP or AVIF when supported by the device.
 * Detect Retina Displays (High Density) and loads images properly.
 * Automatically requests images with appropriate sizes based on your HTML/CSS definitions.
 * Responsive Images with `img srcset` and `picture` elements.
@@ -38,7 +38,7 @@ Add this snippet right between your `<head>` tag.
         source: 'mywebsite-images',
         // defaults
         devMode: false, // if currently your images are private set this to true to disable the library.
-        webp: true, // use webp when supported
+        format: 'auto', // use webp or avif when supported
         dpr: false // use dpr for your images when supported
     };
 </script>
@@ -118,17 +118,17 @@ The code above will generate the HTML:
 
 ```html
 <img
-    src="https://img.imageboss.me/mysource/width/500/format:webp/path/to/my/image.jpg"
+    src="https://img.imageboss.me/mysource/width/500/format:auto/path/to/my/image.jpg"
     sizes="(max-width: 500px) 100vw, 500px"
     srcset="
-        https://img.imageboss.me/mysource/width/500/format:webp/path/to/my/image.jpg 500w,
-        https://img.imageboss.me/mysource/width/250/format:webp/path/to/my/image.jpg 250w,
-        https://img.imageboss.me/mysource/width/125/format:webp/path/to/my/image.jpg 125w,
-        https://img.imageboss.me/mysource/width/750/format:webp/path/to/my/image.jpg 750w,
-        https://img.imageboss.me/mysource/width/1125/format:webp/path/to/my/image.jpg 1125w,
-        https://img.imageboss.me/mysource/width/1688/format:webp/path/to/my/image.jpg 1688w,
-        https://img.imageboss.me/mysource/width/2531/format:webp/path/to/my/image.jpg 2531w,
-        https://img.imageboss.me/mysource/width/3797/format:webp/path/to/my/image.jpg 3797w
+        https://img.imageboss.me/mysource/width/500/format:auto/path/to/my/image.jpg 500w,
+        https://img.imageboss.me/mysource/width/250/format:auto/path/to/my/image.jpg 250w,
+        https://img.imageboss.me/mysource/width/125/format:auto/path/to/my/image.jpg 125w,
+        https://img.imageboss.me/mysource/width/750/format:auto/path/to/my/image.jpg 750w,
+        https://img.imageboss.me/mysource/width/1125/format:auto/path/to/my/image.jpg 1125w,
+        https://img.imageboss.me/mysource/width/1688/format:auto/path/to/my/image.jpg 1688w,
+        https://img.imageboss.me/mysource/width/2531/format:auto/path/to/my/image.jpg 2531w,
+        https://img.imageboss.me/mysource/width/3797/format:auto/path/to/my/image.jpg 3797w
     "
 />
 ```
@@ -151,11 +151,11 @@ The code above will generate the HTML:
 
 ```html
 <img
-    src="https://img.imageboss.me/mysource/width/500/format:webp/path/to/my/image.jpg"
+    src="https://img.imageboss.me/mysource/width/500/format:auto/path/to/my/image.jpg"
     sizes="(max-width: 500px) 100vw, 500px"
     srcset="
-        https://img.imageboss.me/mysource/width/100/format:webp/path/to/my/image.jpg 500w,
-        https://img.imageboss.me/mysource/width/300/format:webp/path/to/my/image.jpg 250w
+        https://img.imageboss.me/mysource/width/100/format:auto/path/to/my/image.jpg 500w,
+        https://img.imageboss.me/mysource/width/300/format:auto/path/to/my/image.jpg 250w
     "
 />
 ```

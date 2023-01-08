@@ -49,7 +49,7 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
     lowRes: isDefined('lowRes', false),
     devMode: isDefined('devMode', false),
     dpr: isDefined('dpr', false),
-    webp: isDefined('webp', true)
+    format: isDefined('format', 'auto')
   };
 
   function isDefined(prop, fallback) {
@@ -342,8 +342,8 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
         return setImage(img, src);
       }
 
-      if (localOptions.webp && localOptions.webpSupport) {
-        options.push('format:webp');
+      if (localOptions.format && localOptions.format === 'auto') {
+        options.push('format:auto');
       }
 
       handleSrcSet(img, _objectSpread({}, imageParams, {
@@ -357,49 +357,36 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
   }
 
   ;
+  var defaultSelector = "[".concat(localOptions.imgPropKey, "],source[").concat(localOptions.sourcePropKey, "],[").concat(localOptions.bgPropKey, "]");
 
-  (function webpDetection(callback, enabled) {
-    if (!enabled) {
-      return callback(false);
+  function mutationLookup(target) {
+    if (!target) {
+      return;
     }
 
-    var img = new Image();
-    img.src = 'data:image/webp;base64,UklGRh4AAABXRUJQVlA4TBEAAAAvAAAAAAfQ//73v/+BiOh/AAA=';
-    img.onload = callback.bind(this, true);
-    img.onerror = callback.bind(this, false);
-  })(function (webSupport) {
-    localOptions.webpSupport = webSupport;
-    var defaultSelector = "[".concat(localOptions.imgPropKey, "],source[").concat(localOptions.sourcePropKey, "],[").concat(localOptions.bgPropKey, "]");
+    if (target.length) {
+      Array.prototype.forEach.call(target, function (node) {
+        if (node.attributes && (node.attributes[localOptions.imgPropKey] || node.attributes[localOptions.bgPropKey]) && !isFullyLoaded(node)) {
+          lookup([node]);
+        }
 
-    function mutationLookup(target) {
-      if (!target) {
-        return;
-      }
-
-      if (target.length) {
-        Array.prototype.forEach.call(target, function (node) {
-          if (node.attributes && (node.attributes[localOptions.imgPropKey] || node.attributes[localOptions.bgPropKey]) && !isFullyLoaded(node)) {
-            lookup([node]);
-          }
-
-          mutationLookup(node.childNodes);
-        });
-      }
-
-      mutationLookup(target.childNodes);
+        mutationLookup(node.childNodes);
+      });
     }
 
-    var defaultCallback = () => lookup(document.querySelectorAll(defaultSelector)); // call it if its already ready.
+    mutationLookup(target.childNodes);
+  }
+
+  var defaultCallback = () => lookup(document.querySelectorAll(defaultSelector)); // call it if its already ready.
 
 
-    if (document.readyState !== 'loading') {
-      defaultCallback();
-    } // in case the user do not add the script at the bottom
+  if (document.readyState !== 'loading') {
+    defaultCallback();
+  } // in case the user do not add the script at the bottom
 
 
-    window.addEventListener("DOMContentLoaded", defaultCallback);
-    window.addEventListener("DOMNodeInserted", function (e) {
-      mutationLookup(e.target);
-    });
-  }, localOptions.webp);
+  window.addEventListener("DOMContentLoaded", defaultCallback);
+  window.addEventListener("DOMNodeInserted", function (e) {
+    mutationLookup(e.target);
+  });
 })(window);
