@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/imageboss/imageboss-web.git"
+    "url": "git@github.com:imageboss/imageboss-web.git"
   },
   "keywords": [
     "imageboss",
