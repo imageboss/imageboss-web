@@ -42,7 +42,7 @@ Add this snippet right between your `<head>` tag.
         dpr: false // use dpr for your images when supported
     };
 </script>
-<script async src="//cdn.jsdelivr.net/gh/imageboss/imageboss-web@5.0.10/dist/imageboss.min.js" type="text/javascript"></script>
+<script async src="//cdn.jsdelivr.net/gh/imageboss/imageboss-web@5.1.0/dist/imageboss.min.js" type="text/javascript"></script>
 ```
 
 ### Pre-connect
