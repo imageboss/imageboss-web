@@ -291,6 +291,7 @@
 
                 handleSrcSet(img, { ...imageParams, options });
                 handleSrc(img, { ...imageParams, options, operation });
+                setProtectedAttribute(img, 'loaded', true);
             });
     };
     
