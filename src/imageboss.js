@@ -294,25 +294,23 @@
                 setProtectedAttribute(img, 'loaded', true);
             });
     };
-    
+
     const defaultSelector = `[${localOptions.imgPropKey}],source[${localOptions.sourcePropKey}],[${localOptions.bgPropKey}]`;
     function mutationLookup(target) {
         if (!target) {
             return;
         }
 
-        if (target.length) {
-            Array.prototype.forEach.call(target, function (node) {
-                if (
-                    node.attributes &&
-                    (node.attributes[localOptions.imgPropKey] || node.attributes[localOptions.bgPropKey]) &&
-                    !isFullyLoaded(node)
-                ) {
-                    lookup([node]);
-                }
-                mutationLookup(node.childNodes);
-            })
-        }
+        Array.prototype.forEach.call(target.length ? target : [target], function (node) {
+            if (
+                node.attributes &&
+                (node.attributes[localOptions.imgPropKey] || node.attributes[localOptions.bgPropKey]) &&
+                !isFullyLoaded(node)
+            ) {
+                lookup([node]);
+            }
+            mutationLookup(node.childNodes);
+        })
 
         mutationLookup(target.childNodes);
     }

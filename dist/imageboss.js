@@ -365,16 +365,13 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
       return;
     }
 
-    if (target.length) {
-      Array.prototype.forEach.call(target, function (node) {
-        if (node.attributes && (node.attributes[localOptions.imgPropKey] || node.attributes[localOptions.bgPropKey]) && !isFullyLoaded(node)) {
-          lookup([node]);
-        }
+    Array.prototype.forEach.call(target.length ? target : [target], function (node) {
+      if (node.attributes && (node.attributes[localOptions.imgPropKey] || node.attributes[localOptions.bgPropKey]) && !isFullyLoaded(node)) {
+        lookup([node]);
+      }
 
-        mutationLookup(node.childNodes);
-      });
-    }
-
+      mutationLookup(node.childNodes);
+    });
     mutationLookup(target.childNodes);
   }
 
