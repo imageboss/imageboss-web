@@ -324,8 +324,26 @@
 
     // in case the user do not add the script at the bottom
     window.addEventListener("DOMContentLoaded", defaultCallback);
-    window.addEventListener("DOMNodeInserted", function (e) {
-        mutationLookup(e.target);
+
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.type === 'childList') {
+                mutation.addedNodes.forEach((node) => {
+                    mutationLookup(node);
+                });
+            } else if (mutation.type === 'attributes') {
+                mutationLookup(mutation.target);
+            }
+        });
     });
 
+    const observerConfig = {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: [localOptions.imgPropKey, localOptions.bgPropKey]
+    };
+
+    // Start observing the document
+    observer.observe(document.body, observerConfig);
 })(window);
