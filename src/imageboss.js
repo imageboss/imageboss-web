@@ -344,6 +344,12 @@
         attributeFilter: [localOptions.imgPropKey, localOptions.bgPropKey]
     };
 
-    // Start observing the document
-    observer.observe(document.body, observerConfig);
+    const observe = () => observer.observe(document.body, observerConfig)
+
+    // check if the body is already loaded
+    if (document.body) {
+        observe();
+    } else {
+        document.addEventListener('DOMContentLoaded', observe);
+    }
 })(window);
